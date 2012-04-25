@@ -1,0 +1,45 @@
+{application, eunit_http, [
+    % A very short description of your application.
+    {description, "EUnit HTTP Assertions"},
+
+    % Pull the version number from git.
+    {vsn, git},
+
+    % All names of registered processes in the application. systools uses this
+    % list to detect name clashes between applications.
+    {registered, [
+        eunit_http_sup
+    ]},
+
+    % All modules introduced by this application. systools uses this list when
+    % generating boot scripts and tar files. A module must be defined in one and
+    % only one application. Defaults to [].
+    {modules, [
+        eunit_http_app,
+        eunit_http_sup
+    ]},
+
+    % All applications which must be started before this application is started.
+    % systools uses this list to generate correct boot scripts.
+    {applications, [
+        kernel,
+        stdlib
+    ]},
+
+    % The application controller will automatically load any included applications
+    % when loading a primary application, but not start them. Instead, the top
+    % supervisor of the included application must be started by a supervisor in
+    % the including application.
+    {included_applications, []},
+
+    % The application master starts the application by calling the application
+    % callback function start/2 in the module, and with the start argument,
+    % defined here:
+    {mod, eunit_http_app, []},
+
+    % Configuration parameters: A list of {Par, Val} tuples, Par should be
+    % an atom, Val may be any term.
+    % The values specified here can be overridden by values in a system
+    % configuration file.
+    {env, []}
+]}.
