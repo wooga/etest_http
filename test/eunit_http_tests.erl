@@ -10,8 +10,18 @@ init() ->
     eunit_http:init().
 
 performGet_test_() ->
-    Res = ?performGet("http://quobor.com"),
-    [
-        ?_assertStatus(Res, 200)
-    ].
+    Res = ?performGet("https://github.com/about"),
+    [?_assertStatus(Res, 200),
+     ?_assertError({assertStatus_failed, _}, ?assertStatus(Res, 400)),
 
+     ?_assertBodyContains(Res, "GitHub"),
+     ?_assertError({assertContains_failed, _},
+        ?assertBodyContains(Res, "HubGit")),
+
+     ?_assertHeader(Res, "Date"),
+     ?_assertError({assertHeader_failed, _},
+        ?assertHeader(Res, "X-Missing")),
+
+     ?_assertHeaderVal(Res, "Content-Type", "text/html; charset=utf-8"),
+     ?_assertError({assertHeaderVal_failed, _},
+        ?assertHeaderVal(Res, "Content-Type", "application/json"))].

@@ -83,7 +83,7 @@
 -define (assertBodyContains(Res, Needle), ok).
 -else.
 -define (assertBodyContains(Res, Needle),
-        ?assertContains(Res#eunit_http.body, Needle)).
+    ?assertContains(binary_to_list(Res#eunit_http_res.body), Needle)).
 -endif.
 
 -define (_assertBodyContains(Res, Needle),
@@ -101,7 +101,6 @@
 -define (_assertBody(Res, Body), ?_test(?assertBody(Res, Body))).
 
 
-
 % TODO - Document!
 -ifdef(NOASSERT).
 -define (assertHeader(Res, HeaderName), ok).
@@ -109,11 +108,11 @@
 -define (assertHeader(Res, HeaderName),
     ((fun() ->
         Headers = Res#eunit_http_res.headers,
-        case proplists:get_value(HeaderName, Headers, undefined) of
-            undefined -> .erlang:error({assertHeader_failed,
-                            [{module,   ?MODULE},
-                             {line,     ?LINE},
-                             {expected, (??HeaderName)}]});
+        case proplists:is_defined(HeaderName, Headers) of
+            false -> .erlang:error({assertHeader_failed,
+                        [{module,   ?MODULE},
+                         {line,     ?LINE},
+                         {expected, (??HeaderName)}]});
             _ -> ok
         end
     end)())).
@@ -128,11 +127,21 @@
 -define (assertHeaderVal(Res, HeaderName, HeaderVal), ok).
 -else.
 -define (assertHeaderVal(Res, HeaderName, HeaderVal),
-    erlang:error(not_implemented)).
+    ((fun() ->
+        Headers = Res#eunit_http_res.headers,
+        case proplists:get_value(HeaderName, Headers, undefined) of
+            HeaderVal -> ok;
+            __V -> .erlang:error({assertHeaderVal_failed,
+                        [{module,   ?MODULE},
+                         {line,     ?LINE},
+                         {expected, HeaderVal},
+                         {value,    __V}]})
+        end
+    end)())).
 -endif.
 
 -define (_assertHeaderVal(Res, HeaderName, HeaderVal),
-    ?_test(assertHeaderVal(Res, HeaderName, HeaderVal))).
+    ?_test(?assertHeaderVal(Res, HeaderName, HeaderVal))).
 
 
 % TODO - Document!

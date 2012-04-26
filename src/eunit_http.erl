@@ -18,7 +18,7 @@ init() ->
 perform_request(Method, Url, Headers0, Queries, Body) ->
     FullUrl = Url ++ make_query(Queries),
 
-    case lhttpc:request(FullUrl, Method, Headers0, Body, 5000) of
+    case lhttpc:request(FullUrl, Method, Headers0, Body, 10000) of
         Error = {error, _} -> Error;
         {ok, Response}     ->
             {{StatusCode, _}, Headers, ResponseBody} = Response,
