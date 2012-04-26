@@ -1,21 +1,24 @@
 %% @license GNU General Public License (GPL) Version 3
 %% @doc Application initialization module.
 -module (eunit_http).
--export ([start/0]).
+-export ([init/0]).
+-export ([perform_request/5]).
 -include ("eunit_http.hrl").
 
 
 %% @doc Starts eunit_http, including all dependencies.
-start() ->
+init() ->
     Deps = [crypto, public_key, ssl, lhttpc, eunit_http],
-    [application:start(Dep) || Dep <- Deps].
+    [application:start(Dep) || Dep <- Deps],
+    ok.
 
 
 
 % TODO - Document!
-perform_request(Method, Url, Headers, Queries, Body) ->
+perform_request(Method, Url, Headers0, Queries, Body) ->
     FullUrl = Url ++ make_query(Queries),
-    case lhttpc:request(FullUrl, Method, Headers, Body, 5000) of
+
+    case lhttpc:request(FullUrl, Method, Headers0, Body, 5000) of
         Error = {error, _} -> Error;
         {ok, Response}     ->
             {{StatusCode, _}, Headers, ResponseBody} = Response,
@@ -28,12 +31,15 @@ perform_request(Method, Url, Headers, Queries, Body) ->
 
 
 % TODO - Document!
+make_query([]) -> "";
+
+% TODO - Document!
 make_query(Queries0) ->
-    lists:flatten(["?"|make_query(Queries0, "")).
+    lists:flatten(["/?" | make_query(Queries0, "")]).
 
 
 % TODO - Document!
-make_query([], Acc) -> Acc.
+make_query([], Acc) -> Acc;
 
 % TODO - Document!
 make_query([{Key, Value}|Rest], Acc) ->

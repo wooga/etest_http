@@ -49,9 +49,10 @@
                 .erlang:error({performRequest_failed,
                     [{module,  ?MODULE},
                      {line,    ?LINE},
-                     {request, {FullUrl, Method, Headers, Body, 5000}},
+                     {request, {Method, Url, Headers, Queries, Body}},
                      {error,   (??Reason)}]});
             Response -> Response
+        end
     end)())).
 -endif.
 
@@ -85,7 +86,8 @@
         ?assertContains(Res#eunit_http.body, Needle)).
 -endif.
 
--define (_assertBodyContains(Res, Needle), ?_test(assertBodyContains(Res, Needle))).
+-define (_assertBodyContains(Res, Needle),
+    ?_test(?assertBodyContains(Res, Needle))).
 
 
 % TODO - Document!
@@ -96,7 +98,7 @@
     erlang:error(not_implemented)).
 -endif.
 
--define (_assertBody(Res, Body), ?_test(assertBody(Res, Body))).
+-define (_assertBody(Res, Body), ?_test(?assertBody(Res, Body))).
 
 
 
@@ -117,7 +119,8 @@
     end)())).
 -endif.
 
--define (_assertHeader(Res, HeaderName), ?_test(assertHeader(Res, HeaderName))).
+-define (_assertHeader(Res, HeaderName),
+    ?_test(?assertHeader(Res, HeaderName))).
 
 
 % TODO - Document!
@@ -137,10 +140,20 @@
 -define (assertStatus(Res, StatusCode), ok).
 -else.
 -define (assertStatus(Res, StatusCode),
-    erlang:error(not_implemented)).
+    ((fun() ->
+        case Res#eunit_http_res.status_code of
+            StatusCode -> ok;
+            __V        -> .erlang:error({assertStatus_failed,
+                            [{module,   ?MODULE},
+                             {line,     ?LINE},
+                             {expected, StatusCode},
+                             {value,    __V}]})
+        end
+    end)())).
 -endif.
 
--define (_assertStatus(Res, StatusCode), ?_test(assertStatus(Res, StatusCode))).
+-define (_assertStatus(Res, StatusCode),
+    ?_test(?assertStatus(Res, StatusCode))).
 
 
 % TODO - Document!
@@ -151,7 +164,7 @@
     erlang:error(not_implemented)).
 -endif.
 
--define (_assertJson(Res), ?_test(assertJson(Res))).
+-define (_assertJson(Res), ?_test(?assertJson(Res))).
 
 
 % TODO - Document!
@@ -162,7 +175,7 @@
     erlang:error(not_implemented)).
 -endif.
 
--define (_assertJson(Res, JsonStruct), ?_test(assertJson(Res, JsonStruct))).
+-define (_assertJson(Res, JsonStruct), ?_test(?assertJson(Res, JsonStruct))).
 
 
 % TODO - Document!
@@ -173,7 +186,7 @@
     erlang:error(not_implemented)).
 -endif.
 
--define (_assertJsonKey(Res, Key), ?_test(assertJsonKey(Res, Key))).
+-define (_assertJsonKey(Res, Key), ?_test(?assertJsonKey(Res, Key))).
 
 
 % TODO - Document!
@@ -184,7 +197,7 @@
     erlang:error(not_implemented)).
 -endif.
 
--define (_assertJsonVal(Res, Key, Val), ?_test(assertJsonVal(Res, Key, Val))).
+-define (_assertJsonVal(Res, Key, Val), ?_test(?assertJsonVal(Res, Key, Val))).
 
 
 -endif. % EUNIT_HTTP_HRL.
