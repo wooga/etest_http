@@ -1,12 +1,16 @@
+% TODO - Document!
+
 -ifndef(EUNIT_HTTP_HRL).
 -define(EUNIT_HTTP_HRL, true).
 
+
+% TODO - Document!
 -record (eunit_http_res, {
     status_code,
     headers,
-    body,
-    json_struct
+    body
 }).
+
 
 % TODO - Document!
 -define (performGet(Url), ?performGet(Url, [])).
@@ -39,7 +43,16 @@
 -define (performRequest(Method, Url, Headers, Queries, Body), ok).
 -else.
 -define (performRequest(Method, Url, Headers, Queries, Body),
-    erlang:error(not_implemented)).
+    ((fun() ->
+        case eunit_http:perform_request(Method, Url, Headers, Queries, Body) of
+            {error, Reason} ->
+                .erlang:error({performRequest_failed,
+                    [{module,  ?MODULE},
+                     {line,    ?LINE},
+                     {request, {FullUrl, Method, Headers, Body, 5000}},
+                     {error,   (??Reason)}]});
+            Response -> Response
+    end)())).
 -endif.
 
 
@@ -51,10 +64,10 @@
     ((fun() ->
         case string:str(Haystack, Needle) of
             0 -> .erlang:error({assertContains_failed,
-                    [{module, ?MODULE},
-                     {line, ?LINE},
+                    [{module,   ?MODULE},
+                     {line,     ?LINE},
                      {haystack, (??Haystack)},
-                     {needle, (??Needle)}]});
+                     {needle,   (??Needle)}]});
             _ -> ok
         end
     end)())).
@@ -62,6 +75,17 @@
 
 -define (_assertContains(Haystack, Needle),
     ?_test(?assertContains(Haystack, Needle))).
+
+
+% TODO - Document!
+-ifdef(NOASSERT).
+-define (assertBodyContains(Res, Needle), ok).
+-else.
+-define (assertBodyContains(Res, Needle),
+        ?assertContains(Res#eunit_http.body, Needle)).
+-endif.
+
+-define (_assertBodyContains(Res, Needle), ?_test(assertBodyContains(Res, Needle))).
 
 
 % TODO - Document!
@@ -85,8 +109,8 @@
         Headers = Res#eunit_http_res.headers,
         case proplists:get_value(HeaderName, Headers, undefined) of
             undefined -> .erlang:error({assertHeader_failed,
-                            [{module, ?MODULE},
-                             {line, ?LINE},
+                            [{module,   ?MODULE},
+                             {line,     ?LINE},
                              {expected, (??HeaderName)}]});
             _ -> ok
         end
@@ -163,4 +187,4 @@
 -define (_assertJsonVal(Res, Key, Val), ?_test(assertJsonVal(Res, Key, Val))).
 
 
--endif.
+-endif. % EUNIT_HTTP_HRL.
