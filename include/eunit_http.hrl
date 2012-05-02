@@ -94,8 +94,7 @@
 -ifdef(NOASSERT).
 -define (assertBody(Res, Body), ok).
 -else.
--define (assertBody(Res, Body),
-    erlang:error(not_implemented)).
+-define (assertBody(Res, Body), ?assertEqual(Body, Res#eunit_http_res.body)).
 -endif.
 
 -define (_assertBody(Res, Body), ?_test(?assertBody(Res, Body))).
