@@ -167,17 +167,6 @@
 
 % TODO - Document!
 -ifdef(NOASSERT).
--define (assertJson(Res), ok).
--else.
--define (assertJson(Res),
-    erlang:error(not_implemented)).
--endif.
-
--define (_assertJson(Res), ?_test(?assertJson(Res))).
-
-
-% TODO - Document!
--ifdef(NOASSERT).
 -define (assertJson(Res, JsonStruct), ok).
 -else.
 -define (assertJson(Res, JsonStruct),
