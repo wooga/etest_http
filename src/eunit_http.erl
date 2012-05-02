@@ -41,5 +41,5 @@ make_query([], Acc) -> Acc;
 
 % TODO - Document!
 make_query([{Key, Value}|Rest], Acc) ->
-    Query = [edoc_lib:escape_uri(Key), "&", edoc_lib:escape_uri(Value)],
+    Query = [http_uri:encode(Key), "&", http_uri:encode(Value)],
     make_query(Rest, [Query|Acc]).
