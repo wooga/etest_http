@@ -169,7 +169,10 @@
 -define (assertJson(Res, JsonStruct), ok).
 -else.
 -define (assertJson(Res, JsonStruct),
-    erlang:error(not_implemented)).
+    ((fun() ->
+        Json = eunit_http_json:encode(JsonStruct),
+        ?assertBodyContains(Res, Json)
+    end)())).
 -endif.
 
 -define (_assertJson(Res, JsonStruct), ?_test(?assertJson(Res, JsonStruct))).
