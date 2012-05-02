@@ -67,8 +67,8 @@
             0 -> .erlang:error({assertContains_failed,
                     [{module,   ?MODULE},
                      {line,     ?LINE},
-                     {haystack, (??Haystack)},
-                     {needle,   (??Needle)}]});
+                     {haystack, Haystack},
+                     {needle,   Needle}]});
             _ -> ok
         end
     end)())).
