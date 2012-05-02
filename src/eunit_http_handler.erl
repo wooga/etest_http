@@ -23,7 +23,7 @@ handle([<<"json">>], _Req, _Args) ->
             {baz, bang}
         ]}
     ]),
-    {200, ?HEADERS, eunit_http:json_encode(JsonStruct)};
+    {200, ?HEADERS, eunit_http_json:encode(JsonStruct)};
 
 % TODO - Document!
 handle(_, _Req, _Args) -> {200, ?HEADERS, <<"Hello">>}.

@@ -51,7 +51,7 @@
                      {line,    ?LINE},
                      {request, {Method, Url, Headers, Queries, Body}},
                      {error,   (??Reason)}]});
-            Response -> Response
+            __Response -> __Response
         end
     end)())).
 -endif.
@@ -127,8 +127,8 @@
 -else.
 -define (assertHeaderVal(Res, HeaderName, HeaderVal),
     ((fun() ->
-        Headers = Res#eunit_http_res.headers,
-        case proplists:get_value(HeaderName, Headers, undefined) of
+        __Headers = Res#eunit_http_res.headers,
+        case proplists:get_value(HeaderName, __Headers, undefined) of
             HeaderVal -> ok;
             __V -> .erlang:error({assertHeaderVal_failed,
                         [{module,   ?MODULE},
@@ -170,8 +170,9 @@
 -else.
 -define (assertJson(Res, JsonStruct),
     ((fun() ->
-        Json = eunit_http_json:encode(JsonStruct),
-        ?assertBodyContains(Res, Json)
+        __Value    = eunit_http_json:decode(Res#eunit_http_res.body),
+        __Expected = eunit_http_json:decode(eunit_http_json:encode(JsonStruct)),
+        ?assertEqual(__Expected, __Value)
     end)())).
 -endif.
 
@@ -183,7 +184,18 @@
 -define (assertJsonKey(Res, Key), ok).
 -else.
 -define (assertJsonKey(Res, Key),
-    erlang:error(not_implemented)).
+    ((fun() ->
+        __JsonStruct = eunit_http_json:decode(Res#eunit_http_res.body),
+        case eunit_http_json:fetch(Key, __JsonStruct, '__undefined__') of
+            '__undefined__' ->
+                .erlang:error({assertJsonKey_failed,
+                    [{module,   ?MODULE},
+                     {line,     ?LINE},
+                     {expected, Key},
+                     {value,    undefined}] });
+            _ -> ok
+        end
+    end)())).
 -endif.
 
 -define (_assertJsonKey(Res, Key), ?_test(?assertJsonKey(Res, Key))).
@@ -194,7 +206,17 @@
 -define (assertJsonVal(Res, Key, Val), ok).
 -else.
 -define (assertJsonVal(Res, Key, Val),
-    erlang:error(not_implemented)).
+    ((fun() ->
+        __JsonStruct = eunit_http_json:decode(Res#eunit_http_res.body),
+        case eunit_http_json:fetch(Key, __JsonStruct, '__undefined__') of
+            Val -> ok;
+            __V -> .erlang:error({assertJsonVal_failed,
+                        [{module,   ?MODULE},
+                         {line,     ?LINE},
+                         {expected, Val},
+                         {value,    __V}]})
+        end
+    end)())).
 -endif.
 
 -define (_assertJsonVal(Res, Key, Val), ?_test(?assertJsonVal(Res, Key, Val))).

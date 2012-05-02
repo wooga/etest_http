@@ -3,7 +3,26 @@
 -module (eunit_http_json).
 
 %% Public helper methods.
--export ([encode/1, decode/1]).
+-export ([encode/1, decode/1, fetch/2, fetch/3]).
+
+
+%% @doc TODO.
+fetch([Key|[]], Orddict) ->
+  fetch(Key, Orddict);
+
+fetch([Parent|Rest], Orddict) ->
+  fetch(Rest, fetch(Parent, Orddict));
+
+fetch(Key, Orddict) ->
+  orddict:fetch(Key, Orddict).
+
+
+%% @doc Attempt to fetch the fiven Key from the Orddict or return the Default.
+fetch(Key, Dict, Default) ->
+    case (catch fetch(Key, Dict)) of
+        {'EXIT', _} -> Default;
+        Value       -> Value
+    end.
 
 
 % TODO - Document!
