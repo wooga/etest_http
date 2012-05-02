@@ -1,24 +1,31 @@
 %% @author Johannes Huning <johannes.huning@wooga.com>
-%% @doc TODO!
+%% @doc EUnit HTTP related assertions.
 -ifndef(EUNIT_HTTP_HRL).
 -define(EUNIT_HTTP_HRL, true).
 
 
-% TODO - Document!
+%% @doc The HTTP response record.
+%%      Contains all required fields for the assertions to operate on:
+%%      Right now that is nothing but status-code, headers and the body.
 -record (eunit_http_res, {
-    status_code,
-    headers,
-    body
+    status_code :: non_neg_integer(),
+    headers     :: [{binary(), binary() | string()}],
+    body        :: binary()
 }).
 
 
-% TODO - Document!
+%% @doc Perform a GET-request without headers and queries.
+%%      Alias for ?performGet(Url, []).
 -define (performGet(Url), ?performGet(Url, [])).
 
-% TODO - Document!
+
+%% @doc Perform a GET-request using the specified headers but without queries.
+%%      Alias for ?performGet(Url, Headers, []).
 -define (performGet(Url, Headers), ?performGet(Url, Headers, [])).
 
-% TODO - Document!
+
+%% @doc Perform a GET-request using the specified headers and queries.
+%%      Alias for ?performRequest(get, Url, Headers, Queries, <<>>).
 -define (performGet(Url, Headers, Queries),
     ?performRequest(get, Url, Headers, Queries, <<>>)).
 
