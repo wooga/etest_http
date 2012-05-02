@@ -9,9 +9,7 @@
 %% @doc Starts eunit_http, including all dependencies.
 init() ->
     Deps = [crypto, public_key, ssl, lhttpc, eunit_http],
-    [application:start(Dep) || Dep <- Deps],
-    ok.
-
+    [application:start(Dep) || Dep <- Deps].
 
 
 % TODO - Document!
