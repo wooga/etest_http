@@ -1,4 +1,4 @@
-%% @license GNU General Public License (GPL) Version 3
+%% @author Johannes Huning <johannes.huning@wooga.com>
 %% @doc OTP application callback module.
 -module (eunit_http_app).
 

@@ -1,5 +1,5 @@
-%% @license GNU General Public License (GPL) Version 3
-%% @doc OTP supervisor module for .
+%% @author Johannes Huning <johannes.huning@wooga.com>
+%% @doc OTP supervisor module for eunit_http.
 -module (eunit_http_sup).
 
 % OPT supervisor callbacks.

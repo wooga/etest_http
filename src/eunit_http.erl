@@ -1,4 +1,4 @@
-%% @license GNU General Public License (GPL) Version 3
+%% @author Johannes Huning <johannes.huning@wooga.com>
 %% @doc Application initialization module.
 -module (eunit_http).
 -export ([init/0]).

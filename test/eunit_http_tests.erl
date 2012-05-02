@@ -1,3 +1,5 @@
+%% @author Johannes Huning <johannes.huning@wooga.com>
+%% @doc TODO!
 -module (eunit_http_tests).
 -include_lib ("eunit/include/eunit.hrl").
 

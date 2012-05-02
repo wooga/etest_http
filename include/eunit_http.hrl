@@ -1,5 +1,5 @@
-% TODO - Document!
-
+%% @author Johannes Huning <johannes.huning@wooga.com>
+%% @doc TODO!
 -ifndef(EUNIT_HTTP_HRL).
 -define(EUNIT_HTTP_HRL, true).
 
