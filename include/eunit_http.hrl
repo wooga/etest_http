@@ -58,7 +58,7 @@
                      {line,    ?LINE},
                      {request, {Method, Url, Headers, Queries, Body}},
                      {error,   (??Reason)}]});
-            __Response -> __Response
+            __Response -> ok
         end
     end)())).
 -endif.
