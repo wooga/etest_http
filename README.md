@@ -112,7 +112,7 @@ _TODO_
 
 #### assertContains
 
-Assert that the string `Haystack` contains the string `Needle`, fails with `assertContains_failed` otherwise.
+Assert that the string `Haystack` contains the string `Needle`, fail with `assertContains_failed` otherwise.
 
 ```erlang
 % Test Macro.
@@ -126,7 +126,7 @@ Assert that the string `Haystack` contains the string `Needle`, fails with `asse
 
 #### assertBodyContains
 
-Assert that the body received with the response `Res` contains the string `Needle`, fails with `assertContains_failed` otherwise too.
+Assert that the body received with the response `Res` contains the string `Needle`, fail with `assertContains_failed` otherwise too.
 
 ```erlang
 % Test Macro.
@@ -140,7 +140,7 @@ Assert that the body received with the response `Res` contains the string `Needl
 
 #### assertBody
 
-Assert that the body received with the response `Res` is exactly `Body`, fails with `assertEqual_failed` otherwise.
+Assert that the body received with the response `Res` is exactly `Body`, fail with `assertEqual_failed` otherwise.
 
 ```erlang
 ?assertBody(Res, Body).
@@ -156,19 +156,26 @@ Assert that the body received with the response `Res` is exactly `Body`, fails w
 
 #### assertHeader
 
+Assert that the presence of a header `HeaderName` in the headers received with the response `Res`, fail with `assertHeader_failed` otherwise.
+
 ```erlang
 % Test Macro.
 ?assertHeader(Res, HeaderName).
 
 % Test Generator Macro.
 ?_assertHeader(Res, HeaderName).
+
+% HeaderName :: string()
+
+% Examples:
+?_assertHeaderVal("X-Signature").
 ```
 
 ****
 
 #### assertHeaderVal
 
-_TODO_
+Assert that the headers received with the response `Res` has a header `HeaderName` with value `HeaderVal`, fail with `assertHeaderVal_failed` otherwise.
 
 ```erlang
 % Test Macro.
@@ -176,13 +183,19 @@ _TODO_
 
 % Test Generator Macro.
 ?_assertHeaderVal(Res, HeaderName, HeaderVal).
+
+% HeaderName :: string()
+% HeaderVal :: string()
+
+% Examples:
+?_assertHeaderVal("X-Signature", "42UVoTWYp9I-wdWJsQYUyEXRoCI1wCXmOVPqwdV8LU0=").
 ```
 
 ****
 
 #### assertStatus
 
-_TODO_
+Assert that the response's HTTP status code is `StatusCode`, fail with `assertStatus_failed` otherwise.
 
 ```erlang
 % Test Macro.
@@ -190,13 +203,18 @@ _TODO_
 
 % Test Generator Macro.
 ?_assertStatus(Res, StatusCode).
+
+% StatusCode :: integer()
+
+% Example:
+?assertStatus(Res, 200).
 ```
 
 ****
 
 #### assertJson
 
-_TODO_
+Assert that the body received with the response `Res` contains a JSON structure equal to `JsonStruct`, fail with `assertEqual_failed` otherwise.
 
 ```erlang
 % Test Macro.
@@ -204,13 +222,18 @@ _TODO_
 
 % Test Generator Macro.
 ?_assertJson(Res, JsonStruct).
+
+% JsonStruct :: orddict()
+
+% Example:
+?assertJson(Res, [{message, "Hello World"}]).
 ```
 
 ****
 
 #### assertJsonKey
 
-Assert that the body received with the response `Res` contains a JSON object, which has a key `Key` with arbitrary contents, fails with `assertJsonKey_failed` otherwise.
+Assert that the body received with the response `Res` contains a JSON object, which has a key `Key` with arbitrary contents, fail with `assertJsonKey_failed` otherwise.
 
 ```erlang
 % Test Macro.
@@ -233,7 +256,7 @@ Assert that the body received with the response `Res` contains a JSON object, wh
 
 #### assertJsonVal
 
-Assert that the body received with the response `Res` contains a JSON object, which under the key `Key` contains exactly `Val`, fails with `assertJsonVal_failed` otherwise.
+Assert that the body received with the response `Res` contains a JSON object, which under the key `Key` contains exactly `Val`, fail with `assertJsonVal_failed` otherwise.
 
 ```erlang
 % Test Macro.
