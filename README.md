@@ -11,7 +11,7 @@ Install eunit_http by adding it as a [rebar](https://github.com/basho/rebar) dep
 ```erlang
 % rebar.config:
 {deps, [
-    { eunit_http, ".*", {git, "git://github.com/johannesh/eunit_http.git"}},
+    {eunit_http, ".*", {git, "git://github.com/johannesh/eunit_http.git"}},
     % ...
 ]}.
 ```
@@ -36,8 +36,9 @@ Support for more HTTP verbs may be added in the future.
 
 Next, note that all _assertion macros_ perform their checks on a HTTP response record which contains the most important data from the responses received, thus their general form is always: `?assert*(Response, Args...)`.
 
-To summarize, your test cases could possibly look something like this:
+Your test cases could possibly look something like this:
 ```erlang
+% my_module_tests.erl
 -module (my_module_tests).
 -compile (export_all).
 -include_lib ("eunit/include/eunit.hrl").
@@ -51,6 +52,7 @@ something_test_() ->
 Or you could use a setup/teardown approach:
 
 ```erlang
+% my_module2_tests.erl
 -module (my_module2_tests).
 -compile (export_all).
 -include_lib ("eunit/include/eunit.hrl").
@@ -70,59 +72,192 @@ test_second_(_) ->
     [?_assertHeader(Res, 301), ?_assertHeaderVal(Res, <<"Location">>, <<"/login">>)].
 ```
 
-The excellent [Learn You Some Erlang](http://learnyousomeerlang.com/eunit#eunit-whats-a-eunit) has more on this
+The excellent [Learn You Some Erlang](http://learnyousomeerlang.com/eunit#eunit-whats-a-eunit) has more on EUnit in general.
 
--
+
+### Request Macros
 
 _TODO_
 
-**Performing a GET or POST request**
+Two variants, test macro and generator macro.
+Yields a response record required by the test-assertions.
+
+#### performGet
+
+_TODO_
 
 ```erlang
 ?performGet(Url :: string()).
 ?performGet(Url :: string(), Headers :: [header()]).
 ?performGet(Url :: string(), Headers :: [header()], Queries :: [query]).
+```
 
+****
+
+#### performPost
+
+_TODO_
+
+```erlang
 ?performPost(Url :: string()).
 ?performPost(Url :: string(), Headers :: [header()]).
 ?performPost(Url :: string(), Headers :: [header()], Body :: binary()).
 ?performPost(Url :: string(), Headers :: [header()], Body :: binary(), Queries :: [query]).
 ```
 
-Yields a response record required by the test-assertions.
 
--
--
+### Assertion Macros
 
 _TODO_
-assertContains(Haystack, Needle)
+
+#### assertContains
+
+Assert that the string `Haystack` contains the string `Needle`, fails with `assertContains_failed` otherwise.
+
+```erlang
+% Test Macro.
+?assertContains(Haystack, Needle).
+
+% Test Generator Macro.
+?_assertContains(Haystack, Needle).
+```
+
+****
+
+#### assertBodyContains
+
+Assert that the body received with the response `Res` contains the string `Needle`, fails with `assertContains_failed` otherwise too.
+
+```erlang
+% Test Macro.
+?assertBodyContains(Res, Needle).
+
+% Test Generator Macro.
+?_assertBodyContains(Res, Needle).
+```
+
+****
+
+#### assertBody
+
+Assert that the body received with the response `Res` is exactly `Body`, fails with `assertEqual_failed` otherwise.
+
+```erlang
+?assertBody(Res, Body).
+
+% Test Generator Macro.
+?_assertBody(Res, Body).
+```
+
+**Planned for future versions:**
+* Support for regular expressions
+
+****
+
+#### assertHeader
+
+```erlang
+% Test Macro.
+?assertHeader(Res, HeaderName).
+
+% Test Generator Macro.
+?_assertHeader(Res, HeaderName).
+```
+
+****
+
+#### assertHeaderVal
 
 _TODO_
-assertBodyContains(Res, Needle)
+
+```erlang
+% Test Macro.
+?assertHeaderVal(Res, HeaderName, HeaderVal).
+
+% Test Generator Macro.
+?_assertHeaderVal(Res, HeaderName, HeaderVal).
+```
+
+****
+
+#### assertStatus
 
 _TODO_
-assertBody(Res, Body)
+
+```erlang
+% Test Macro.
+?assertStatus(Res, StatusCode).
+
+% Test Generator Macro.
+?_assertStatus(Res, StatusCode).
+```
+
+****
+
+#### assertJson
 
 _TODO_
-assertHeader(Res, HeaderName)
 
-_TODO_
-assertHeaderVal
+```erlang
+% Test Macro.
+?assertJson(Res, JsonStruct).
 
-_TODO_
-assertStatus
+% Test Generator Macro.
+?_assertJson(Res, JsonStruct).
+```
 
-_TODO_
-assertJson
+****
 
-_TODO_
-assertJsonKey
+#### assertJsonKey
 
-_TODO_
-assertJsonVal
+Assert that the body received with the response `Res` contains a JSON object, which has a key `Key` with arbitrary contents, fails with `assertJsonKey_failed` otherwise.
+
+```erlang
+% Test Macro.
+?assertJsonKey(Res, Key).
+
+% Test Generator Macro.
+?_assertJsonKey(Res, Key).
+
+% Key :: binary() | [binary()]
+
+% Examples:
+?assertJsonKey(Res, <<"message">>).
+?assertJsonKey(Res, [<<"messages">>, <<"en">>]).
+```
+
+**Planned for future versions:**
+* Support for regular expressions
+
+****
+
+#### assertJsonVal
+
+Assert that the body received with the response `Res` contains a JSON object, which under the key `Key` contains exactly `Val`, fails with `assertJsonVal_failed` otherwise.
+
+```erlang
+% Test Macro.
+?assertJsonVal(Res, Key, Val).
+
+% Test Generator Macro.
+?_assertJsonVal(Res, Key, Val).
+
+% Key :: binary() | [binary()]
+% Val :: atom() | binary() | list() | integer() | float() | {list()}
+
+% Examples:
+?assertJsonVal(Res, <<"message">>, <<"Hello World">>).
+?assertJsonVal(Res, <<"should_reload">>, true).
+?assertJsonVal(Res, [<<"messages">>, <<"de">>], <<"Hallo Welt">>).
+```
+
+**Planned for future versions:**
+* Support for regular expressions
+
+
 
 ## Notes
 
 * I plan to replace `lhttpc` with the Erlang HTTP Server, as well as `elli`, which will be replaced with the Erlang HTTP Client to minimize dependencies
 
-* JSON is encoded and decoded to and from orddicts, this will change to work with simple proplists instead, I also have to take a look at mochijson
+* JSON is encoded and decoded to and from orddicts, this will change to work with simple proplists instead
