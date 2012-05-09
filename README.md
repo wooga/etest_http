@@ -77,42 +77,52 @@ The excellent [Learn You Some Erlang](http://learnyousomeerlang.com/eunit#eunit-
 
 ### Request Macros
 
-_TODO_
-
-Two variants, test macro and generator macro.
-Yields a response record required by the test-assertions.
+Assertion macros operate on a _response record_, obtainable via the request macros.
 
 #### performGet
 
-_TODO_
+Perform a `GET` request, yielding a response record.
 
 ```erlang
-?performGet(Url :: string()).
-?performGet(Url :: string(), Headers :: [header()]).
-?performGet(Url :: string(), Headers :: [header()], Queries :: [query]).
+Res = ?performGet(Url).
+Res = ?performGet(Url, Headers).
+Res = ?performGet(Url, Headers, Queries).
+
+% Url = string()
+% header() :: {string() | binary() | atom(), string() | binary()}
+% Headers = [header()]
+% query() :: [{string(), string()}]
+% Queries = [query()]
 ```
 
 ****
 
 #### performPost
 
-_TODO_
+Perform a `POST` request, yielding a response record.
 
 ```erlang
-?performPost(Url :: string()).
-?performPost(Url :: string(), Headers :: [header()]).
-?performPost(Url :: string(), Headers :: [header()], Body :: binary()).
-?performPost(Url :: string(), Headers :: [header()], Body :: binary(), Queries :: [query]).
+Res = ?performPost(Url).
+Res = ?performPost(Url, Headers).
+Res = ?performPost(Url, Headers, Body).
+Res = ?performPost(Url, Headers, Body, Queries).
+
+% Url = string()
+% header() :: {string() | binary() | atom(), string() | binary()}
+% Headers = [header()]
+% query() :: [{string(), string()}]
+% Queries = [query()]
+% Body = binary()
 ```
 
 
 ### Assertion Macros
 
-_TODO_
+All assertions macros are available as _test macros_ and _test generator macros_.
 
 #### assertContains
 
-Assert that the string `Haystack` contains the string `Needle`, fail with `assertContains_failed` otherwise.
+Assert that the `Haystack` contains the `Needle`, fail with `assertContains_failed` otherwise.
 
 ```erlang
 % Test Macro.
@@ -120,6 +130,9 @@ Assert that the string `Haystack` contains the string `Needle`, fail with `asser
 
 % Test Generator Macro.
 ?_assertContains(Haystack, Needle).
+
+% Haystack = string()
+% Needle = string()
 ```
 
 ****
@@ -134,6 +147,8 @@ Assert that the body received with the response `Res` contains the string `Needl
 
 % Test Generator Macro.
 ?_assertBodyContains(Res, Needle).
+
+% Needle = string()
 ```
 
 ****
@@ -147,6 +162,8 @@ Assert that the body received with the response `Res` is exactly `Body`, fail wi
 
 % Test Generator Macro.
 ?_assertBody(Res, Body).
+
+% Body = binary()
 ```
 
 **Planned for future versions:**
@@ -165,7 +182,7 @@ Assert that the presence of a header `HeaderName` in the headers received with t
 % Test Generator Macro.
 ?_assertHeader(Res, HeaderName).
 
-% HeaderName :: string()
+% HeaderName = string()
 
 % Examples:
 ?_assertHeaderVal("X-Signature").
@@ -184,8 +201,8 @@ Assert that the headers received with the response `Res` has a header `HeaderNam
 % Test Generator Macro.
 ?_assertHeaderVal(Res, HeaderName, HeaderVal).
 
-% HeaderName :: string()
-% HeaderVal :: string()
+% HeaderName = string()
+% HeaderVal = string()
 
 % Examples:
 ?_assertHeaderVal("X-Signature", "42UVoTWYp9I-wdWJsQYUyEXRoCI1wCXmOVPqwdV8LU0=").
@@ -204,7 +221,7 @@ Assert that the response's HTTP status code is `StatusCode`, fail with `assertSt
 % Test Generator Macro.
 ?_assertStatus(Res, StatusCode).
 
-% StatusCode :: integer()
+% StatusCode = integer()
 
 % Example:
 ?assertStatus(Res, 200).
@@ -223,7 +240,7 @@ Assert that the body received with the response `Res` contains a JSON structure 
 % Test Generator Macro.
 ?_assertJson(Res, JsonStruct).
 
-% JsonStruct :: orddict()
+% JsonStruct = orddict()
 
 % Example:
 ?assertJson(Res, [{message, "Hello World"}]).
@@ -242,7 +259,7 @@ Assert that the body received with the response `Res` contains a JSON object, wh
 % Test Generator Macro.
 ?_assertJsonKey(Res, Key).
 
-% Key :: binary() | [binary()]
+% Key = binary() | [binary()]
 
 % Examples:
 ?assertJsonKey(Res, <<"message">>).
@@ -265,8 +282,8 @@ Assert that the body received with the response `Res` contains a JSON object, wh
 % Test Generator Macro.
 ?_assertJsonVal(Res, Key, Val).
 
-% Key :: binary() | [binary()]
-% Val :: atom() | binary() | list() | integer() | float() | {list()}
+% Key = binary() | [binary()]
+% Val = atom() | binary() | list() | integer() | float() | {list()}
 
 % Examples:
 ?assertJsonVal(Res, <<"message">>, <<"Hello World">>).
