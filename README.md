@@ -208,6 +208,9 @@ Assert that the headers received with the response `Res` has a header `HeaderNam
 ?_assertHeaderVal("X-Signature", "42UVoTWYp9I-wdWJsQYUyEXRoCI1wCXmOVPqwdV8LU0=").
 ```
 
+**Planned for future versions:**
+* Support for regular expressions
+
 ****
 
 #### assertStatus
