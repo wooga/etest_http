@@ -42,6 +42,7 @@ Your test cases could possibly look something like this:
 -module (my_module_tests).
 -compile (export_all).
 -include_lib ("eunit/include/eunit.hrl").
+-include_lib ("eunit_http/include/eunit_http.hrl").
 
 something_test_() ->
     eunit_http:init(),
@@ -56,6 +57,7 @@ Or you could use a setup/teardown approach:
 -module (my_module2_tests).
 -compile (export_all).
 -include_lib ("eunit/include/eunit.hrl").
+-include_lib ("eunit_http/include/eunit_http.hrl").
 
 my_module2_test_()  ->
     {foreach, fun start/0, fun stop/1, [fun test_first_/1, fun test_second_/1]}.
