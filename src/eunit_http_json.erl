@@ -6,6 +6,30 @@
 -export ([encode/1, decode/1, fetch/2, fetch/3]).
 
 
+% Insert a new element to the JSON-object.
+store(Json, Key, Value) ->
+    % Note that orddict:store inserts elements sorted.
+    orddict:store(Key, Value, Json).
+
+
+% Create a new JSON-struct in the underlying representation.
+create() ->
+    % For orddict, this would be the empty list: [].
+    orddict:new().
+
+
+% @doc Construct a new JSON struct from the given proplist.
+construct(Proplist = [{_,_}|_]) ->
+    Step = fun({Key, Value}, Json) ->
+        store(Json, Key, construct(Value))
+    end,
+    lists:foldl(Step, create(), Proplist);
+
+% For all other elements which are not proplists, return their identity; only
+% proplists need recursive folding to ensure order in the underlying orddict.
+construct(Literal) -> Literal.
+
+
 %% @doc TODO.
 fetch([Key|[]], Orddict) ->
   fetch(Key, Orddict);
@@ -31,7 +55,7 @@ encode(Orddict) ->
 
 % TODO - Document!
 decode(Binary) ->
-  unpack(jiffy:decode(Binary)).
+  construct(unpack(jiffy:decode(Binary))).
 
 
 %% @doc Attempts to extract a orddict from the given jiffy-JSON.
