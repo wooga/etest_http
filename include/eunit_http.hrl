@@ -213,17 +213,20 @@
 -define (assertJsonVal(Res, Key, Val), ok).
 -else.
 -define (assertJsonVal(Res, Key, Val),
-    ((fun() ->
+    ((fun(Value) ->
         __JsonStruct = eunit_http_json:decode(Res#eunit_http_res.body),
         case eunit_http_json:fetch(Key, __JsonStruct, '__undefined__') of
-            Val -> ok;
-            __V -> .erlang:error({assertJsonVal_failed,
-                        [{module,   ?MODULE},
-                         {line,     ?LINE},
-                         {expected, Val},
-                         {value,    __V}]})
+            Value ->
+                ok;
+            __V ->
+                .erlang:error({assertJsonVal_failed, [
+                    {module,   ?MODULE},
+                    {line,     ?LINE},
+                    {expected, Value},
+                    {value,    __V}]
+                })
         end
-    end)())).
+    end)( Val ))).
 -endif.
 
 -define (_assertJsonVal(Res, Key, Val), ?_test(?assertJsonVal(Res, Key, Val))).
