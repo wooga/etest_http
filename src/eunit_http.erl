@@ -28,18 +28,25 @@ perform_request(Method, Url, Headers0, Queries, Body) ->
     end.
 
 
-% TODO - Document!
-make_query([]) -> "";
 
-% TODO - Document!
-make_query(Queries0) ->
-    lists:flatten(["/?" | make_query(Queries0, "")]).
+make_query([H | T]) ->
+    "?" ++ [url_var(H) | [["&", url_var(X)] || X <- T]];
 
+make_query([]) ->
+    [].
 
-% TODO - Document!
-make_query([], Acc) -> Acc;
+url_var({Key, Value}) ->
+    [query_string(Key), "=", query_string(Value)].
 
-% TODO - Document!
-make_query([{Key, Value}|Rest], Acc) ->
-    Query = [http_uri:encode(Key), "&", http_uri:encode(Value)],
-    make_query(Rest, [Query|Acc]).
+query_string( Value ) when is_list(Value) ->
+    http_uri:encode(Value);
+
+query_string( Value ) when is_bitstring(Value) ->
+    http_uri:encode(binary_to_list(Value));
+
+query_string( Value ) when is_integer(Value) ->
+    Value;
+
+% Catch all - throws badarg
+query_string( Value ) ->
+    throw({badarg, "Argument must be either String, Integer or Bitstring"}).
