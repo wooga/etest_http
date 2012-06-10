@@ -1,17 +1,17 @@
-## eunit_http
+## etest_http
 
-EUnit Assertions for HTTP requests
+ETest Assertions for HTTP responses
 
 
 
 ## Installation
 
-Install eunit_http by adding it as a [rebar](https://github.com/basho/rebar) dependency:
+Install etest_http by adding it as a [rebar](https://github.com/basho/rebar) dependency:
 
 ```erlang
 % rebar.config:
 {deps, [
-    {eunit_http, ".*", {git, "git://github.com/johannesh/eunit_http.git"}},
+    {etest_http, "", {git, "git://github.com/wooga/etest_http.git"}},
     % ...
 ]}.
 ```
@@ -22,73 +22,44 @@ Then run `rebar get-deps` to synchronize your dependencies.
 
 ## Usage
 
-First of all make sure you initialize `eunit_http` by a call to `eunit_http:init/0` prior using any of the _request macros_ described further below. For now `eunit_http` wraps the HTTP client `lhttpc`, which requires initialization - this will fortunately change in the near future.
-
 The _request macros_ are:
 
 ```erlang
-performGet(Url, Args...).
-performPost(Url, Args...).
-performRequest(Method, Url, Args...).
+?perform_get(Url, Args...).
+?perform_post(Url, Args...).
+?perform_request(Method, Url, Args...).
 ```
-
-Support for more HTTP verbs may be added in the future.
 
 Next, note that all _assertion macros_ perform their checks on a HTTP response record which contains the most important data from the responses received, thus their general form is always: `?assert*(Response, Args...)`.
 
 Your test cases could possibly look something like this:
 ```erlang
-% my_module_tests.erl
--module (my_module_tests).
+% my_module_test.erl
+-module (my_module_test).
 -compile (export_all).
--include_lib ("eunit/include/eunit.hrl").
--include_lib ("eunit_http/include/eunit_http.hrl").
+-include_lib ("etest/include/etest.hrl").
+-include_lib ("etest_http/include/etest_http.hrl").
 
-something_test_() ->
-    eunit_http:init(),
-    Response = ?performGet("http://localhost:8080/message/1"),
-    [?_assertStatus(Response, 200), ?_assertContains("Hello World")].
+something_test() ->
+    Response = ?perform_get("http://localhost:8080/message/1"),
+    ?assert_status(Response, 200),
+    ?assert_contains("Hello World").
 ```
 
-Or you could use a setup/teardown approach:
-
-```erlang
-% my_module2_tests.erl
--module (my_module2_tests).
--compile (export_all).
--include_lib ("eunit/include/eunit.hrl").
--include_lib ("eunit_http/include/eunit_http.hrl").
-
-my_module2_test_()  ->
-    {foreach, fun start/0, fun stop/1, [fun test_first_/1, fun test_second_/1]}.
-
-start() -> eunit_http:init().
-stop(_) -> application:stop(eunit_http).
-
-test_first_(_) ->
-    Res = ?performGet("http://localhost:8080/profile/bob"),
-    [?_assertStatus(Res, 200), ?_assertContains("This is you!")].
-
-test_second_(_) ->
-    Res = ?performGet("http://localhost:8080/profile/alice"),
-    [?_assertHeader(Res, 301), ?_assertHeaderVal(Res, <<"Location">>, <<"/login">>)].
-```
-
-The excellent [Learn You Some Erlang](http://learnyousomeerlang.com/eunit#eunit-whats-a-eunit) has more on EUnit in general.
 
 
 ### Request Macros
 
 Assertion macros operate on a _response record_, obtainable via the request macros.
 
-#### performGet
+#### perform_get
 
 Perform a `GET` request, yielding a response record.
 
 ```erlang
-Res = ?performGet(Url).
-Res = ?performGet(Url, Headers).
-Res = ?performGet(Url, Headers, Queries).
+Res = ?perform_get(Url).
+Res = ?perform_get(Url, Headers).
+Res = ?perform_get(Url, Headers, Queries).
 
 % Url = string()
 % header() :: {string() | binary() | atom(), string() | binary()}
@@ -99,15 +70,15 @@ Res = ?performGet(Url, Headers, Queries).
 
 ****
 
-#### performPost
+#### perform_post
 
 Perform a `POST` request, yielding a response record.
 
 ```erlang
-Res = ?performPost(Url).
-Res = ?performPost(Url, Headers).
-Res = ?performPost(Url, Headers, Body).
-Res = ?performPost(Url, Headers, Body, Queries).
+Res = ?perform_post(Url).
+Res = ?perform_post(Url, Headers).
+Res = ?perform_post(Url, Headers, Body).
+Res = ?perform_post(Url, Headers, Body, Queries).
 
 % Url = string()
 % header() :: {string() | binary() | atom(), string() | binary()}
@@ -122,16 +93,16 @@ Res = ?performPost(Url, Headers, Body, Queries).
 
 All assertions macros are available as _test macros_ and _test generator macros_.
 
-#### assertContains
+#### assert_contains
 
-Assert that the `Haystack` contains the `Needle`, fail with `assertContains_failed` otherwise.
+Assert that the `Haystack` contains the `Needle`, fail with `assert_contains` otherwise.
 
 ```erlang
 % Test Macro.
-?assertContains(Haystack, Needle).
+?assert_contains(Haystack, Needle).
 
 % Test Generator Macro.
-?_assertContains(Haystack, Needle).
+?assert_contains(Haystack, Needle).
 
 % Haystack = string()
 % Needle = string()
@@ -139,31 +110,31 @@ Assert that the `Haystack` contains the `Needle`, fail with `assertContains_fail
 
 ****
 
-#### assertBodyContains
+#### assert_body_contains
 
-Assert that the body received with the response `Res` contains the string `Needle`, fail with `assertContains_failed` otherwise too.
+Assert that the body received with the response `Res` contains the string `Needle`, fail with `assert_contains` otherwise too.
 
 ```erlang
 % Test Macro.
-?assertBodyContains(Res, Needle).
+?assert_body_contains(Res, Needle).
 
 % Test Generator Macro.
-?_assertBodyContains(Res, Needle).
+?assert_body_contains(Res, Needle).
 
 % Needle = string()
 ```
 
 ****
 
-#### assertBody
+#### assert_body
 
-Assert that the body received with the response `Res` is exactly `Body`, fail with `assertEqual_failed` otherwise.
+Assert that the body received with the response `Res` is exactly `Body`, fail with `assert_equal` otherwise.
 
 ```erlang
-?assertBody(Res, Body).
+?assert_body(Res, Body).
 
 % Test Generator Macro.
-?_assertBody(Res, Body).
+?assert_body(Res, Body).
 
 % Body = binary()
 ```
@@ -173,136 +144,119 @@ Assert that the body received with the response `Res` is exactly `Body`, fail wi
 
 ****
 
-#### assertHeader
+#### assert_header
 
-Assert that the presence of a header `HeaderName` in the headers received with the response `Res`, fail with `assertHeader_failed` otherwise.
+Assert that the presence of a header `HeaderName` in the headers received with the response `Res`, fail with `assert_header` otherwise.
 
 ```erlang
 % Test Macro.
-?assertHeader(Res, HeaderName).
+?assert_header(Res, HeaderName).
 
 % Test Generator Macro.
-?_assertHeader(Res, HeaderName).
+?assert_header(Res, HeaderName).
 
 % HeaderName = string()
 
 % Examples:
-?_assertHeaderVal("X-Signature").
+?assert_header_val("X-Signature").
 ```
 
 ****
 
-#### assertHeaderVal
+#### assert_header_val
 
-Assert that the headers received with the response `Res` has a header `HeaderName` with value `HeaderVal`, fail with `assertHeaderVal_failed` otherwise.
+Assert that the headers received with the response `Res` has a header `HeaderName` with value `HeaderVal`, fail with `assert_header_val` otherwise.
 
 ```erlang
 % Test Macro.
-?assertHeaderVal(Res, HeaderName, HeaderVal).
+?assert_header_val(Res, HeaderName, HeaderVal).
 
 % Test Generator Macro.
-?_assertHeaderVal(Res, HeaderName, HeaderVal).
+?assert_header_val(Res, HeaderName, HeaderVal).
 
 % HeaderName = string()
 % HeaderVal = string()
 
 % Examples:
-?_assertHeaderVal("X-Signature", "42UVoTWYp9I-wdWJsQYUyEXRoCI1wCXmOVPqwdV8LU0=").
+?assert_header_val("X-Signature", "42UVoTWYp9I-wdWJsQYUyEXRoCI1wCXmOVPqwdV8LU0=").
 ```
-
-**Planned for future versions:**
-* Support for regular expressions
 
 ****
 
-#### assertStatus
+#### assert_status
 
-Assert that the response's HTTP status code is `StatusCode`, fail with `assertStatus_failed` otherwise.
+Assert that the response's HTTP status code is `StatusCode`, fail with `assert_status` otherwise.
 
 ```erlang
 % Test Macro.
-?assertStatus(Res, StatusCode).
+?assert_status(Res, StatusCode).
 
 % Test Generator Macro.
-?_assertStatus(Res, StatusCode).
+?assert_status(Res, StatusCode).
 
 % StatusCode = integer()
 
 % Example:
-?assertStatus(Res, 200).
+?assert_status(Res, 200).
 ```
 
 ****
 
-#### assertJson
+#### assert_json
 
-Assert that the body received with the response `Res` contains a JSON structure equal to `JsonStruct`, fail with `assertEqual_failed` otherwise.
+Assert that the body received with the response `Res` contains a JSON structure equal to `JsonStruct`, fail with `assert_equal` otherwise.
 
 ```erlang
 % Test Macro.
-?assertJson(Res, JsonStruct).
+?assert_json(Res, JsonStruct).
 
 % Test Generator Macro.
-?_assertJson(Res, JsonStruct).
+?assert_json(Res, JsonStruct).
 
 % JsonStruct = orddict()
 
 % Example:
-?assertJson(Res, [{message, "Hello World"}]).
+?assert_json(Res, [{message, "Hello World"}]).
 ```
 
 ****
 
-#### assertJsonKey
+#### assert_json_key
 
-Assert that the body received with the response `Res` contains a JSON object, which has a key `Key` with arbitrary contents, fail with `assertJsonKey_failed` otherwise.
+Assert that the body received with the response `Res` contains a JSON object, which has a key `Key` with arbitrary contents, fail with `assert_json_key` otherwise.
 
 ```erlang
 % Test Macro.
-?assertJsonKey(Res, Key).
+?assert_json_key(Res, Key).
 
 % Test Generator Macro.
-?_assertJsonKey(Res, Key).
+?assert_json_key(Res, Key).
 
 % Key = binary() | [binary()]
 
 % Examples:
-?assertJsonKey(Res, <<"message">>).
-?assertJsonKey(Res, [<<"messages">>, <<"en">>]).
+?assert_json_key(Res, <<"message">>).
+?assert_json_key(Res, [<<"messages">>, <<"en">>]).
 ```
-
-**Planned for future versions:**
-* Support for regular expressions
 
 ****
 
-#### assertJsonVal
+#### assert_json_val
 
-Assert that the body received with the response `Res` contains a JSON object, which under the key `Key` contains exactly `Val`, fail with `assertJsonVal_failed` otherwise.
+Assert that the body received with the response `Res` contains a JSON object, which under the key `Key` contains exactly `Val`, fail with `assert_json_val` otherwise.
 
 ```erlang
 % Test Macro.
-?assertJsonVal(Res, Key, Val).
+?assert_json_val(Res, Key, Val).
 
 % Test Generator Macro.
-?_assertJsonVal(Res, Key, Val).
+?assert_json_val(Res, Key, Val).
 
 % Key = binary() | [binary()]
 % Val = atom() | binary() | list() | integer() | float() | {list()}
 
 % Examples:
-?assertJsonVal(Res, <<"message">>, <<"Hello World">>).
-?assertJsonVal(Res, <<"should_reload">>, true).
-?assertJsonVal(Res, [<<"messages">>, <<"de">>], <<"Hallo Welt">>).
+?assert_json_val(Res, <<"message">>, <<"Hello World">>).
+?assert_json_val(Res, <<"should_reload">>, true).
+?assert_json_val(Res, [<<"messages">>, <<"de">>], <<"Hallo Welt">>).
 ```
-
-**Planned for future versions:**
-* Support for regular expressions
-
-
-
-## Notes
-
-* I plan to replace `lhttpc` with the Erlang HTTP Server, as well as `elli`, which will be replaced with the Erlang HTTP Client to minimize dependencies
-
-* JSON is encoded and decoded to and from orddicts, this will change to work with simple proplists instead

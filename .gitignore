@@ -6,9 +6,6 @@
 # Ignore compiled BEAM files.
 *.beam
 
-# Ignore files compiled on-the-fly by EUnit.
-.eunit
-
 # Ignore dependencies, use `rebar fetch-deps` prior compilation.
 deps/*
 

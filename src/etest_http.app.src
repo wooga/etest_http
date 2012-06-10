@@ -1,0 +1,8 @@
+{application, etest_http, [
+    {description, "ETest HTTP Assertions"},
+    {vsn, git},
+    {registered, []},
+    {modules, []},
+    {applications, [kernel, stdlib]},
+    {env, []}
+]}.
