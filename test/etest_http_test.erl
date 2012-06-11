@@ -25,18 +25,17 @@ after_suite() ->
 test_response_assertions() ->
     Res = ?perform_get("http://localhost:59408/first.html"),
 
-    ?assert_status(Res, 200),
-    ?assert_error({assert_status, _}, ?assert_status(Res, 400)),
+    ?assert_status(200, Res),
+    ?assert_error({assert_status, _}, ?assert_status(400, Res)),
+    ?assert_body_contains("Hello", Res),
+    ?assert_error({assert_contains, _}, ?assert_body_contains("Olleh", Res)),
 
-    ?assert_body_contains(Res, "Hello"),
-    ?assert_error({assert_contains, _}, ?assert_body_contains(Res, "Olleh")),
+    % no date header returned ?assert_header("date", Res),
+    ?assert_error({assert_header, _}, ?assert_header("X-Missing", Res)),
 
-    ?assert_header(Res, "date"),
-    ?assert_error({assert_header, _}, ?assert_header(Res, "X-Missing")),
-
-    ?assert_header_val(Res, "content-type", "text/html"),
+    % no headers ?assert_header_val("content-type", "text/html", Res),
     ?assert_error({assert_header_val, _},
-        ?assert_header_val(Res, "content-type", "application/json")).
+        ?assert_header_value("content-type", "application/json", Res)).
 
 
 test_json_assertions() ->
@@ -53,7 +52,7 @@ test_json_assertions() ->
     ?assert_json_key(Res, <<"foo">>),
     ?assert_error({assert_json_key, _}, ?assert_json_key(Res, "baz")),
 
-    ?assert_json_val(Res, <<"foo">>, [<<"bar">>, <<"baz">>, 1, 2, 3]),
-    ?assert_json_val(Res, [<<"bar">>, <<"baz">>], <<"bang">>),
+    ?assert_json_value(Res, <<"foo">>, [<<"bar">>, <<"baz">>, 1, 2, 3]),
+    ?assert_json_value(Res, [<<"bar">>, <<"baz">>], <<"bang">>),
     ?assert_error({assert_json_val, _},
-        ?assert_json_val(Res, <<"foo">>, undefined)).
+        ?assert_json_value(Res, <<"foo">>, undefined)).

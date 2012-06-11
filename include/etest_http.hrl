@@ -45,7 +45,7 @@
 end)())).
 
 
--define (assert_contains(Haystack, Needle),
+-define (assert_contains(Needle, Haystack),
 ((fun() ->
     case string:str(Haystack, Needle) of
         0 -> .erlang:error({assert_contains,
@@ -57,13 +57,13 @@ end)())).
     end
 end)())).
 
--define (assert_body_contains(Res, Needle),
-    ?assert_contains(Res#etest_http_res.body, Needle)).
+-define (assert_body_contains(Needle, Res),
+    ?assert_contains(Needle, Res#etest_http_res.body)).
 
 -define (assert_body(Res, Body), ?assert_equal(Body, Res#etest_http_res.body)).
 
 
--define (assert_header(Res, HeaderName),
+-define (assert_header(HeaderName, Res),
 ((fun() ->
     Headers = Res#etest_http_res.headers,
     case proplists:is_defined(HeaderName, Headers) of
@@ -78,22 +78,22 @@ end)())).
 end)())).
 
 
--define (assert_header_val(Res, HeaderName, HeaderVal0),
-((fun(HeaderVal) ->
+-define (assert_header_value(HeaderName, HeaderValue, Res),
+((fun(HeaderName, HeaderValue) ->
     __Headers = Res#etest_http_res.headers,
     case proplists:get_value(HeaderName, __Headers, undefined) of
-        HeaderVal -> ok;
+        HeaderValue -> ok;
         __V -> .erlang:error({assert_header_val,
                     [{module,   ?MODULE},
                      {line,     ?LINE},
                      {header,   (??HeaderName)},
-                     {expected, (??HeaderVal0)},
+                     {expected, (??HeaderValue)},
                      {value,    __V}] })
     end
-end)(HeaderVal0))).
+end)(HeaderName, HeaderValue))).
 
 
--define (assert_status(Res, StatusCode0),
+-define (assert_status(StatusCode0, Res),
 ((fun(StatusCode) ->
     case Res#etest_http_res.status of
         StatusCode -> ok;
@@ -129,7 +129,7 @@ end)())).
 end)())).
 
 
--define (assert_json_val(Res, Key, Value0),
+-define (assert_json_value(Res, Key, Value0),
 ((fun(Value) ->
     __JsonStruct = etest_http_json:decode(Res#etest_http_res.body),
     case etest_http_json:fetch(Key, __JsonStruct, '__undefined__') of
