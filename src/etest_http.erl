@@ -24,7 +24,7 @@ perform_request(Method, Url, Headers, Queries, Body) ->
             {{_, StatusCode, _}, ResHeaders, ResBody} = Response,
             #etest_http_res {
                 status  = StatusCode,
-                headers = Headers,
+                headers = ResHeaders,
                 body    = ResBody };
 
         Error = {error, _} -> Error

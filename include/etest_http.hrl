@@ -71,7 +71,8 @@ end)())).
             .erlang:error({assert_header,
                 [{module,   ?MODULE},
                  {line,     ?LINE},
-                 {expected, (??HeaderName)}] });
+                 {expected, (??HeaderName)},
+                 {headers,  Headers}] });
         _ -> ok
     end
 end)())).
