@@ -81,7 +81,8 @@ end)())).
 -define (assert_header_value(HeaderName, HeaderValue0, Res),
 ((fun(HeaderValue) ->
     __Headers = Res#etest_http_res.headers,
-    case proplists:get_value(HeaderName, __Headers, undefined) of
+    __Name = string:to_lower(HeaderName),
+    case proplists:get_value(__Name, __Headers, undefined) of
         HeaderValue -> ok;
         __V -> .erlang:error({assert_header_val,
                     [{module,   ?MODULE},
