@@ -1,8 +1,27 @@
-## etest_http
+# etest_http
 
-ETest Assertions for HTTP responses
+etest\_http is a supplementary library for [etest](https://github.com/wooga/etest)
+that makes it easy to test http APIs by providing useful assertions and helper
+methods.
 
+## Example Test Case
 
+```erlang
+
+-module (my_api_test).
+-compile (export_all).
+
+% etest macros
+-include_lib ("etest/include/etest.hrl").
+% etest_http macros
+-include_lib ("etest_http/include/etest_http.hrl").
+
+test_hello_world() ->
+    Response = ?perform_get("http://localhost:3000/hello/world"),
+    ?assert_status(200, Response),
+    ?assert_body_contains("Hello", Response),
+    ?assert_body("Hello World", Response).
+```
 
 ## Installation
 
@@ -19,46 +38,22 @@ dependency:
 
 Then run `rebar get-deps` to synchronize your dependencies.
 
-
-
 ## Usage
 
-The _request macros_ are:
+There are two kinds of macros which etest_http provides:
 
-```erlang
-?perform_get(Url, Args...).
-?perform_post(Url, Args...).
-?perform_request(Method, Url, Args...).
-```
+The [request macros](https://github.com/wooga/etest_http#request-macros) provide
+a simple API to perform HTTP request. They return a response record on which
+subsequent assertions are performed.
 
-Next, note that all _assertion macros_ perform their checks on a HTTP response
-record which contains the most important data from the responses received, thus
-their general form is always: `?assert*(Response, Args...)`.
-
-Your test cases could possibly look something like this:
-```erlang
-% my_module_test.erl
--module (my_module_test).
--compile (export_all).
--include_lib ("etest/include/etest.hrl").
--include_lib ("etest_http/include/etest_http.hrl").
-
-something_test() ->
-    Response = ?perform_get("http://localhost:8080/message/1"),
-    ?assert_status(Response, 200),
-    ?assert_contains("Hello World").
-```
-
-
+The [assertion macros](https://github.com/wooga/etest_http#assertion-macros)
+provide useful http API related assertions.
 
 ### Request Macros
 
-Assertion macros operate on a _response record_, obtainable via the request
-macros.
-
 #### perform_get
 
-Perform a `GET` request, yielding a response record.
+Perform a `GET` request, returns a response record.
 
 ```erlang
 Res = ?perform_get(Url).
@@ -76,7 +71,7 @@ Res = ?perform_get(Url, Headers, Queries).
 
 #### perform_post
 
-Perform a `POST` request, yielding a response record.
+Perform a `POST` request, returns a response record.
 
 ```erlang
 Res = ?perform_post(Url).
@@ -94,8 +89,6 @@ Res = ?perform_post(Url, Headers, Body, Queries).
 
 
 ### Assertion Macros
-
-All assertions macros are available as _test macros_ and _test generator macros_.
 
 #### assert_contains
 
@@ -138,7 +131,7 @@ Assert that the body received with the response `Res` is exactly `Body`, fail
 with `assert_equal` otherwise.
 
 ```erlang
-?assert_body(Body, Resr).
+?assert_body(Body, Res).
 
 % Test Generator Macro.
 ?assert_body(Body, Res).
@@ -166,7 +159,7 @@ the response `Res`, fail with `assert_header` otherwise.
 % HeaderName = string()
 
 % Examples:
-?assert_header_val("X-Signature").
+?assert_header_val("X-Signature", Res).
 ```
 
 ****
