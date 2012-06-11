@@ -30,10 +30,10 @@ test_response_assertions() ->
     ?assert_body_contains("Hello", Res),
     ?assert_error({assert_contains, _}, ?assert_body_contains("Olleh", Res)),
 
-    % no date header returned ?assert_header("date", Res),
+    ?assert_header("date", Res),
     ?assert_error({assert_header, _}, ?assert_header("X-Missing", Res)),
 
-    % no headers ?assert_header_val("content-type", "text/html", Res),
+    ?assert_header_value("content-type", "text/html", Res),
     ?assert_error({assert_header_val, _},
         ?assert_header_value("content-type", "application/json", Res)).
 
