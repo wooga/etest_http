@@ -257,20 +257,20 @@ otherwise.
 
 #### assert_json_value
 
-Assert that the body received with the response `Res` contains a JSON object, which under the key `Key` contains exactly `Val`, fail with `assert_json_val` otherwise.
+Assert that the body received with the response `Res` contains a JSON object, which under the key `Key` contains exactly `Val`, fail with `assert_json_value` otherwise.
 
 ```erlang
 % Test Macro.
-?assert_json_val(Key, Val, Res).
+?assert_json_value(Key, Val, Res).
 
 % Test Generator Macro.
-?assert_json_val(Key, Val, Res).
+?assert_json_value(Key, Val, Res).
 
 % Key = binary() | [binary()]
 % Val = atom() | binary() | list() | integer() | float() | {list()}
 
 % Examples:
-?assert_json_val(<<"message">>, <<"Hello World">>, Res).
-?assert_json_val(<<"should_reload">>, true, Res).
-?assert_json_val([<<"messages">>, <<"de">>], <<"Hallo Welt">>, Res).
+?assert_json_value(<<"message">>, <<"Hello World">>, Res).
+?assert_json_value(<<"should_reload">>, true, Res).
+?assert_json_value([<<"messages">>, <<"de">>], <<"Hallo Welt">>, Res).
 ```
