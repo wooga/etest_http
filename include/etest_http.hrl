@@ -78,8 +78,8 @@ end)())).
 end)())).
 
 
--define (assert_header_value(HeaderName, HeaderValue, Res),
-((fun(HeaderName, HeaderValue) ->
+-define (assert_header_value(HeaderName, HeaderValue0, Res),
+((fun(HeaderValue) ->
     __Headers = Res#etest_http_res.headers,
     case proplists:get_value(HeaderName, __Headers, undefined) of
         HeaderValue -> ok;
@@ -87,10 +87,10 @@ end)())).
                     [{module,   ?MODULE},
                      {line,     ?LINE},
                      {header,   (??HeaderName)},
-                     {expected, (??HeaderValue)},
+                     {expected, (??HeaderValue0)},
                      {value,    __V}] })
     end
-end)(HeaderName, HeaderValue))).
+end)(HeaderValue0))).
 
 
 -define (assert_status(StatusCode0, Res),
