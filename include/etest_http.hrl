@@ -77,10 +77,8 @@ end)())).
 end)())).
 
 
--define (assert_header_val(ExpectedHeader, Res),
-((fun(ExpectedHeader) ->
-    {HeaderName, HeaderValue} = ExpectedHeader,
-
+-define (assert_header_value(HeaderName, HeaderValue, Res),
+((fun(HeaderName, HeaderValue) ->
     __Headers = Res#etest_http_res.headers,
     case proplists:get_value(HeaderName, __Headers, undefined) of
         HeaderValue -> ok;
@@ -91,7 +89,7 @@ end)())).
                      {expected, (??HeaderValue)},
                      {value,    __V}] })
     end
-end)(ExpectedHeader))).
+end)(HeaderName, HeaderValue))).
 
 
 -define (assert_status(StatusCode0, Res),
@@ -130,7 +128,7 @@ end)())).
 end)())).
 
 
--define (assert_json_val(Res, Key, Value0),
+-define (assert_json_value(Res, Key, Value0),
 ((fun(Value) ->
     __JsonStruct = etest_http_json:decode(Res#etest_http_res.body),
     case etest_http_json:fetch(Key, __JsonStruct, '__undefined__') of

@@ -33,9 +33,9 @@ test_response_assertions() ->
     % no date header returned ?assert_header("date", Res),
     ?assert_error({assert_header, _}, ?assert_header("X-Missing", Res)),
 
-    % no headers ?assert_header_val({"content-type", "text/html"}, Res),
+    % no headers ?assert_header_val("content-type", "text/html", Res),
     ?assert_error({assert_header_val, _},
-        ?assert_header_val({"content-type", "application/json"}, Res)).
+        ?assert_header_value("content-type", "application/json", Res)).
 
 
 test_json_assertions() ->
@@ -52,7 +52,7 @@ test_json_assertions() ->
     ?assert_json_key(Res, <<"foo">>),
     ?assert_error({assert_json_key, _}, ?assert_json_key(Res, "baz")),
 
-    ?assert_json_val(Res, <<"foo">>, [<<"bar">>, <<"baz">>, 1, 2, 3]),
-    ?assert_json_val(Res, [<<"bar">>, <<"baz">>], <<"bang">>),
+    ?assert_json_value(Res, <<"foo">>, [<<"bar">>, <<"baz">>, 1, 2, 3]),
+    ?assert_json_value(Res, [<<"bar">>, <<"baz">>], <<"bang">>),
     ?assert_error({assert_json_val, _},
-        ?assert_json_val(Res, <<"foo">>, undefined)).
+        ?assert_json_value(Res, <<"foo">>, undefined)).
