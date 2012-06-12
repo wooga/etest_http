@@ -112,7 +112,7 @@ end)(HeaderValue0, Res))).
 end)(StatusCode0, Res))).
 
 
--define (assert_json(Res, JsonStruct),
+-define (assert_json(JsonStruct, Res),
 ((fun(__Res) ->
     __Value    = etest_http_json:decode(__Res#etest_http_res.body),
     __Expected = etest_http_json:decode(etest_http_json:encode(JsonStruct)),
