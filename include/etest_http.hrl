@@ -58,14 +58,19 @@ end)())).
 end)())).
 
 -define (assert_body_contains(Needle, Res),
-    ?assert_contains(Needle, Res#etest_http_res.body)).
+((fun(__Res) ->
+    ?assert_contains(Needle, __Res#etest_http_res.body)
+end)(Res))).
 
--define (assert_body(Res, Body), ?assert_equal(Body, Res#etest_http_res.body)).
+-define (assert_body(Body, Res),
+((fun(__Res) ->
+    ?assert_equal(Body, __Res#etest_http_res.body)
+end)(Res))).
 
 
 -define (assert_header(HeaderName, Res),
-((fun() ->
-    Headers = Res#etest_http_res.headers,
+((fun(__Res) ->
+    Headers = __Res#etest_http_res.headers,
     case proplists:is_defined(HeaderName, Headers) of
         false ->
             .erlang:error({assert_header,
@@ -75,12 +80,12 @@ end)())).
                  {headers,  Headers}] });
         _ -> ok
     end
-end)())).
+end)(Res))).
 
 
 -define (assert_header_value(HeaderName, HeaderValue0, Res),
-((fun(HeaderValue) ->
-    __Headers = Res#etest_http_res.headers,
+((fun(HeaderValue, __Res) ->
+    __Headers = __Res#etest_http_res.headers,
     __Name = string:to_lower(HeaderName),
     case proplists:get_value(__Name, __Headers, undefined) of
         HeaderValue -> ok;
@@ -91,12 +96,12 @@ end)())).
                      {expected, (??HeaderValue0)},
                      {value,    __V}] })
     end
-end)(HeaderValue0))).
+end)(HeaderValue0, Res))).
 
 
 -define (assert_status(StatusCode0, Res),
-((fun(StatusCode) ->
-    case Res#etest_http_res.status of
+((fun(StatusCode, __Res) ->
+    case __Res#etest_http_res.status of
         StatusCode -> ok;
         __V -> .erlang:error({assert_status,
                     [{module,   ?MODULE},
@@ -104,20 +109,20 @@ end)(HeaderValue0))).
                      {expected, (??StatusCode0)},
                      {value,    __V}] })
     end
-end)(StatusCode0))).
+end)(StatusCode0, Res))).
 
 
 -define (assert_json(Res, JsonStruct),
-((fun() ->
-    __Value    = etest_http_json:decode(Res#etest_http_res.body),
+((fun(__Res) ->
+    __Value    = etest_http_json:decode(__Res#etest_http_res.body),
     __Expected = etest_http_json:decode(etest_http_json:encode(JsonStruct)),
     ?assert_equal(__Expected, __Value)
-end)())).
+end)(Res))).
 
 
--define (assert_json_key(Res, Key),
-((fun() ->
-    __JsonStruct = etest_http_json:decode(Res#etest_http_res.body),
+-define (assert_json_key(Key, Res),
+((fun(__Res) ->
+    __JsonStruct = etest_http_json:decode(__Res#etest_http_res.body),
     case etest_http_json:fetch(Key, __JsonStruct, '__undefined__') of
         '__undefined__' ->
             .erlang:error({assert_json_key,
@@ -127,12 +132,12 @@ end)())).
                  {value,    undefined}] });
         _ -> ok
     end
-end)())).
+end)(Res))).
 
 
--define (assert_json_value(Res, Key, Value0),
-((fun(Value) ->
-    __JsonStruct = etest_http_json:decode(Res#etest_http_res.body),
+-define (assert_json_value(Key, Value0, Res),
+((fun(Value, __Res) ->
+    __JsonStruct = etest_http_json:decode(__Res#etest_http_res.body),
     case etest_http_json:fetch(Key, __JsonStruct, '__undefined__') of
         Value -> ok;
         __V -> .erlang:error({assert_json_val,
@@ -141,6 +146,6 @@ end)())).
                      {expected, (??Value0)},
                      {value,    __V}] })
     end
-end)(Value0))).
+end)(Value0, Res))).
 
 -endif. % ETEST_HTTP_HRL.
