@@ -19,7 +19,7 @@ perform_request(Method, Url, Headers, Queries, Body) ->
         _   -> {FullUrl, Headers, "", Body}
     end,
 
-    case httpc:request(Method, Request, [], []) of
+    case httpc:request(Method, Request, [{autoredirect, false}], []) of
         {ok, Response} ->
             {{_, StatusCode, _}, ResHeaders, ResBody} = Response,
             #etest_http_res {
