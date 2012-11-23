@@ -29,6 +29,11 @@
 -define (perform_post(Url, Headers, Body, Queries),
     ?perform_request(post, Url, Headers, Queries, Body)).
 
+-define (perform_delete(Url), ?perform_delete(Url, [])).
+-define (perform_delete(Url, Headers), ?perform_delete(Url, Headers, [])).
+-define (perform_delete(Url, Headers, Queries),
+	?perform_request(delete, Url, Headers, Queries, <<>>)).
+
 
 -define (perform_request(Method, Url, Headers, Queries, Body),
 ((fun() ->

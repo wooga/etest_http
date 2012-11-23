@@ -16,6 +16,7 @@ perform_request(Method, Url, Headers, Queries, Body) ->
     FullUrl = Url ++ query_string(Queries),
     Request = case Method of
         get -> {FullUrl, Headers};
+		delete -> {FullUrl, Headers};
         _   -> {FullUrl, Headers, "", Body}
     end,
 
