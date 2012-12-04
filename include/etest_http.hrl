@@ -133,8 +133,9 @@ end)(Res))).
             .erlang:error({assert_json_key,
                 [{module,   ?MODULE},
                  {line,     ?LINE},
-                 {expected, (??Key)},
-                 {value,    undefined}] });
+                 {expected_expression, (??Key)},
+                 {expected_value, Key},
+                 {got_value,    undefined}] });
         _ -> ok
     end
 end)(Res))).
@@ -148,8 +149,9 @@ end)(Res))).
         __V -> .erlang:error({assert_json_val,
                     [{module,   ?MODULE},
                      {line,     ?LINE},
-                     {expected, (??Value0)},
-                     {value,    __V}] })
+                     {expected_expression, (??Value0)},
+                     {expected_value, Value0},
+                     {got_value,    __V}] })
     end
 end)(Value0, Res))).
 
