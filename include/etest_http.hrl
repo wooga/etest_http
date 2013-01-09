@@ -146,6 +146,8 @@ end)(Res))).
     end
 end)(Res))).
 
+-define(assert_json_values(__Queries, __Response),
+	[?assert_json_value(__K, __V, __Response) || {__K, __V} <- __Queries]).
 
 -define (assert_json_value(Key, Value0, Res),
 ((fun(Value, __Res) ->
