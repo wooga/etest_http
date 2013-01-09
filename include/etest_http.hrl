@@ -25,9 +25,15 @@
 -define (perform_post(Url, Headers), ?perform_post(Url, Headers, <<>>)).
 -define (perform_post(Url, Headers, Body),
     ?perform_post(Url, Headers, Body, [])).
-
 -define (perform_post(Url, Headers, Body, Queries),
     ?perform_request(post, Url, Headers, Queries, Body)).
+
+-define (perform_put(Url), ?perform_put(Url, [])).
+-define (perform_put(Url, Headers), ?perform_put(Url, Headers, <<>>)).
+-define (perform_put(Url, Headers, Body),
+    ?perform_put(Url, Headers, Body, [])).
+-define (perform_put(Url, Headers, Body, Queries),
+	?perform_request(put, Url, Headers, Queries, Body)).
 
 -define (perform_delete(Url), ?perform_delete(Url, [])).
 -define (perform_delete(Url, Headers), ?perform_delete(Url, Headers, [])).
