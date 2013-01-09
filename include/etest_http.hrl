@@ -161,4 +161,26 @@ end)(Res))).
     end
 end)(Value0, Res))).
 
+-define(get_json_value(__Key, __Response),
+((fun
+	  (__Key, __JsonStructBin) when is_binary(__JsonStructBin) ->
+		 __JsonStruct = etest_http_json:decode(__JsonStructBin),
+		 case etest_http_json:fetch(__Key, __JsonStruct, undefined) of
+			 undefined -> .erlang:error({json_val_undefined,
+										 [{json_struct, __JsonStruct},
+										  {module,   ?MODULE},
+										  {line,     ?LINE}] });
+			 Value -> Value
+		 end;
+
+	  (__Key, __Res) ->
+		 __JsonStruct = etest_http_json:decode(__Res#etest_http_res.body),
+		 case etest_http_json:fetch(__Key, __JsonStruct, undefined) of
+			 undefined -> .erlang:error({json_val_undefined,
+										 [{module,   ?MODULE},
+										  {line,     ?LINE}] });
+			 Value -> Value
+		 end
+ end)(__Key, __Response))).
+
 -endif. % ETEST_HTTP_HRL.
