@@ -38,13 +38,19 @@ query_string([Head|Tail]) ->
 
 query_string([]) -> [].
 
-
+	%% Value to list
+make_query({Key, Value}) when
+	Value =:= true orelse
+	Value =:= false ->
+	make_query({Key, atom_to_list(Value)});
 make_query({Key, Value}) when is_binary(Value) ->
 	make_query({Key, binary_to_list(Value)});
-make_query({Key, Value}) when is_atom(Key) ->
-	make_query({atom_to_list(Key), Value});
 make_query({Key, Value}) when is_integer(Value) ->
 	make_query({Key, integer_to_list(Value)});
+	%% Key to list
+make_query({Key, Value}) when is_atom(Key) ->
+	make_query({atom_to_list(Key), Value});
+	%% key & value lists
 make_query({Key, Value}) when is_list(Key) andalso is_list(Value) ->
     [url_encode(Key), "=", url_encode(Value)].
 
