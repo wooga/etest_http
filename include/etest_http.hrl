@@ -34,7 +34,7 @@
 ((fun() ->
     case etest_http:perform_request(Method, Url, Headers, Queries, Body) of
         {error, Reason} ->
-            .erlang:error({perform_request,
+            erlang:error({perform_request,
                 [{module, ?MODULE},
                  {line,   ?LINE},
                  {request,
@@ -48,7 +48,7 @@ end)())).
 -define (assert_contains(Needle, Haystack),
 ((fun() ->
     case string:str(Haystack, Needle) of
-        0 -> .erlang:error({assert_contains,
+        0 -> erlang:error({assert_contains,
                 [{module,   ?MODULE},
                  {line,     ?LINE},
                  {haystack, (??Haystack)},
@@ -73,7 +73,7 @@ end)(Res))).
     Headers = __Res#etest_http_res.headers,
     case proplists:is_defined(HeaderName, Headers) of
         false ->
-            .erlang:error({assert_header,
+            erlang:error({assert_header,
                 [{module,   ?MODULE},
                  {line,     ?LINE},
                  {expected, (??HeaderName)},
@@ -89,7 +89,7 @@ end)(Res))).
     __Name = string:to_lower(HeaderName),
     case proplists:get_value(__Name, __Headers, undefined) of
         HeaderValue -> ok;
-        __V -> .erlang:error({assert_header_val,
+        __V -> erlang:error({assert_header_val,
                     [{module,   ?MODULE},
                      {line,     ?LINE},
                      {header,   (??HeaderName)},
@@ -103,7 +103,7 @@ end)(HeaderValue0, Res))).
 ((fun(StatusCode, __Res) ->
     case __Res#etest_http_res.status of
         StatusCode -> ok;
-        __V -> .erlang:error({assert_status,
+        __V -> erlang:error({assert_status,
                     [{module,   ?MODULE},
                      {line,     ?LINE},
                      {expected, (??StatusCode0)},
@@ -125,7 +125,7 @@ end)(Res))).
     __JsonStruct = etest_http_json:decode(__Res#etest_http_res.body),
     case etest_http_json:fetch(Key, __JsonStruct, '__undefined__') of
         '__undefined__' ->
-            .erlang:error({assert_json_key,
+            erlang:error({assert_json_key,
                 [{module,   ?MODULE},
                  {line,     ?LINE},
                  {expected, (??Key)},
@@ -140,7 +140,7 @@ end)(Res))).
     __JsonStruct = etest_http_json:decode(__Res#etest_http_res.body),
     case etest_http_json:fetch(Key, __JsonStruct, '__undefined__') of
         Value -> ok;
-        __V -> .erlang:error({assert_json_val,
+        __V -> erlang:error({assert_json_val,
                     [{module,   ?MODULE},
                      {line,     ?LINE},
                      {expected, (??Value0)},
