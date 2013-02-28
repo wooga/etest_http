@@ -1,4 +1,3 @@
-%% @author Johannes Huning <johannes.huning@wooga.com>
 -module (etest_http).
 -export ([perform_request/5]).
 
@@ -16,7 +15,7 @@ perform_request(Method, Url, Headers, Queries, Body) ->
     FullUrl = Url ++ query_string(Queries),
     Request = case Method of
         get -> {FullUrl, Headers};
-		delete -> {FullUrl, Headers};
+        delete -> {FullUrl, Headers};
         _   -> {FullUrl, Headers, "", Body}
     end,
 
@@ -38,19 +37,23 @@ query_string([Head|Tail]) ->
 
 query_string([]) -> [].
 
-	%% Value to list
+% Value to list
 make_query({Key, Value}) when
-	Value =:= true orelse
-	Value =:= false ->
-	make_query({Key, atom_to_list(Value)});
+    Value =:= true orelse
+    Value =:= false ->
+    make_query({Key, atom_to_list(Value)});
+
 make_query({Key, Value}) when is_binary(Value) ->
-	make_query({Key, binary_to_list(Value)});
+    make_query({Key, binary_to_list(Value)});
+
 make_query({Key, Value}) when is_integer(Value) ->
-	make_query({Key, integer_to_list(Value)});
-	%% Key to list
+    make_query({Key, integer_to_list(Value)});
+
+% Key to list
 make_query({Key, Value}) when is_atom(Key) ->
-	make_query({atom_to_list(Key), Value});
-	%% key & value lists
+    make_query({atom_to_list(Key), Value});
+
+% Key & value lists
 make_query({Key, Value}) when is_list(Key) andalso is_list(Value) ->
     [url_encode(Key), "=", url_encode(Value)].
 
