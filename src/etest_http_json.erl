@@ -37,6 +37,8 @@ fetch([Key|[]], Orddict) ->
 fetch([Parent|Rest], Orddict) ->
     fetch(Rest, fetch(Parent, Orddict));
 
+fetch(Key, Orddict) when is_atom(Key) ->
+	fetch(atom_to_binary(Key, latin1), Orddict);
 fetch(Key, Orddict) ->
     orddict:fetch(Key, Orddict).
 

@@ -25,9 +25,20 @@
 -define (perform_post(Url, Headers), ?perform_post(Url, Headers, <<>>)).
 -define (perform_post(Url, Headers, Body),
     ?perform_post(Url, Headers, Body, [])).
-
 -define (perform_post(Url, Headers, Body, Queries),
     ?perform_request(post, Url, Headers, Queries, Body)).
+
+-define (perform_put(Url), ?perform_put(Url, [])).
+-define (perform_put(Url, Headers), ?perform_put(Url, Headers, <<>>)).
+-define (perform_put(Url, Headers, Body),
+    ?perform_put(Url, Headers, Body, [])).
+-define (perform_put(Url, Headers, Body, Queries),
+	?perform_request(put, Url, Headers, Queries, Body)).
+
+-define (perform_delete(Url), ?perform_delete(Url, [])).
+-define (perform_delete(Url, Headers), ?perform_delete(Url, Headers, [])).
+-define (perform_delete(Url, Headers, Queries),
+	?perform_request(delete, Url, Headers, Queries, <<>>)).
 
 
 -define (perform_request(Method, Url, Headers, Queries, Body),
@@ -128,12 +139,15 @@ end)(Res))).
             erlang:error({assert_json_key,
                 [{module,   ?MODULE},
                  {line,     ?LINE},
-                 {expected, (??Key)},
-                 {value,    undefined}] });
+                 {expected_expression, (??Key)},
+                 {expected_value, Key},
+                 {got_value,    undefined}] });
         _ -> ok
     end
 end)(Res))).
 
+-define(assert_json_values(__Queries, __Response),
+	[?assert_json_value(__K, __V, __Response) || {__K, __V} <- __Queries]).
 
 -define (assert_json_value(Key, Value0, Res),
 ((fun(Value, __Res) ->
@@ -143,9 +157,32 @@ end)(Res))).
         __V -> erlang:error({assert_json_val,
                     [{module,   ?MODULE},
                      {line,     ?LINE},
-                     {expected, (??Value0)},
-                     {value,    __V}] })
+                     {expected_expression, (??Value0)},
+                     {expected_value, Value0},
+                     {got_value,    __V}] })
     end
 end)(Value0, Res))).
+
+-define(get_json_value(__Key, __Response),
+((fun
+	  (__Key, __JsonStructBin) when is_binary(__JsonStructBin) ->
+		 __JsonStruct = etest_http_json:decode(__JsonStructBin),
+		 case etest_http_json:fetch(__Key, __JsonStruct, undefined) of
+			 undefined -> .erlang:error({json_val_undefined,
+										 [{json_struct, __JsonStruct},
+										  {module,   ?MODULE},
+										  {line,     ?LINE}] });
+			 Value -> Value
+		 end;
+
+	  (__Key, __Res) ->
+		 __JsonStruct = etest_http_json:decode(__Res#etest_http_res.body),
+		 case etest_http_json:fetch(__Key, __JsonStruct, undefined) of
+			 undefined -> .erlang:error({json_val_undefined,
+										 [{module,   ?MODULE},
+										  {line,     ?LINE}] });
+			 Value -> Value
+		 end
+ end)(__Key, __Response))).
 
 -endif. % ETEST_HTTP_HRL.
