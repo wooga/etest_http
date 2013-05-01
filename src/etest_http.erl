@@ -31,7 +31,7 @@ perform_request(Method, Url, Headers, Queries, Body) ->
     end.
 
 
-%% @doc Generates a query string to be appended to ab URL.
+%% @doc Generates a query string to be appended to a URL.
 query_string([Head|Tail]) ->
     "?" ++ [make_query(Head) | [["&", make_query(Elem)] || Elem <- Tail]];
 
