@@ -69,7 +69,11 @@ end)())).
 
 -define (assert_body_contains(Needle, Res),
 ((fun(__Res) ->
-    ?assert_contains(Needle, binary_to_list(__Res#etest_http_res.body))
+    Body = case __Res#etest_http_res.body of
+        Binary when is_binary(Binary) -> binary_to_list(Binary);
+        String -> String
+    end,
+    ?assert_contains(Needle, Body)
 end)(Res))).
 
 -define (assert_body(Body, Res),
