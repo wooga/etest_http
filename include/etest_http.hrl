@@ -54,33 +54,51 @@
     end
 end)())).
 
-
--define (assert_contains(Needle, Haystack),
+-define (assert_contains_result(Needle, Haystack, ExpectedResult),
 ((fun() ->
     case string:str(Haystack, Needle) of
-        0 -> erlang:error({assert_contains,
-                [{module,   ?MODULE},
-                 {line,     ?LINE},
-                 {haystack, (??Haystack)},
-                 {needle,   (??Needle)}] });
+        ExpectedResult -> erlang:error({assert_contains,
+                                [{module,   ?MODULE},
+                                 {line,     ?LINE},
+                                 {haystack, (??Haystack)},
+                                 {needle,   (??Needle)}] });
         _ -> ok
     end
 end)())).
 
--define (assert_body_contains(Needle, Res),
+-define (assert_contains(Needle, Haystack),
+((fun() ->
+      ?assert_contains_result(Needle, Haystack, 0)
+end)())).
+
+-define (assert_not_contains(Needle, Haystack),
+((fun() ->
+      ?assert_contains_result(Needle, Haystack, 1)
+end)())).
+
+-define (assert_body_contains_result(Needle, Res, Result),
 ((fun(__Res) ->
     Body = case __Res#etest_http_res.body of
         Binary when is_binary(Binary) -> binary_to_list(Binary);
         String -> String
     end,
-    ?assert_contains(Needle, Body)
+    ?assert_contains_result(Needle, Body, Result)
 end)(Res))).
+
+-define (assert_body_contains(Needle, Res),
+((fun() ->
+    ?assert_body_contains_result(Needle, Res, 0)
+end)())).
+
+-define (assert_body_not_contains(Needle, Res),
+((fun() ->
+    ?assert_body_contains_result(Needle, Res, 1)
+end)())).
 
 -define (assert_body(Body, Res),
 ((fun(__Res) ->
     ?assert_equal(Body, __Res#etest_http_res.body)
 end)(Res))).
-
 
 -define (assert_header(HeaderName, Res),
 ((fun(__Res) ->
@@ -95,7 +113,6 @@ end)(Res))).
         _ -> ok
     end
 end)(Res))).
-
 
 -define (assert_header_value(HeaderName, HeaderValue0, Res),
 ((fun(HeaderValue, __Res) ->
