@@ -46,13 +46,13 @@ test_json_assertions() ->
 
     Res = ?perform_get("http://localhost:59408/second.json"),
 
-    ?assert_json(Res, JsonStruct),
-    ?assert_error({assert_equal, _}, ?assert_json(Res, [])),
+    ?assert_json(JsonStruct, Res),
+    ?assert_error({assert_equal, _}, ?assert_json([], Res)),
 
-    ?assert_json_key(Res, <<"foo">>),
-    ?assert_error({assert_json_key, _}, ?assert_json_key(Res, "baz")),
+    ?assert_json_key(<<"foo">>, Res),
+    ?assert_error({assert_json_key, _}, ?assert_json_key("baz", Res)),
 
-    ?assert_json_value(Res, <<"foo">>, [<<"bar">>, <<"baz">>, 1, 2, 3]),
-    ?assert_json_value(Res, [<<"bar">>, <<"baz">>], <<"bang">>),
+    ?assert_json_value(<<"foo">>, [<<"bar">>, <<"baz">>, 1, 2, 3], Res),
+    ?assert_json_value([<<"bar">>, <<"baz">>], <<"bang">>, Res),
     ?assert_error({assert_json_val, _},
-        ?assert_json_value(Res, <<"foo">>, undefined)).
+        ?assert_json_value(<<"foo">>, undefined, Res)).
