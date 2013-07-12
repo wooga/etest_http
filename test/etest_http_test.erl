@@ -28,6 +28,8 @@ test_response_assertions() ->
     ?assert_status(200, Res),
     ?assert_error({assert_status, _}, ?assert_status(400, Res)),
     ?assert_body_contains("Hello", Res),
+    %% ?assert_body_not_contains("Olleh", Res),
+
     ?assert_error({assert_contains, _}, ?assert_body_contains("Olleh", Res)),
 
     ?assert_header("date", Res),
