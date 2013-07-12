@@ -175,7 +175,7 @@ end)(Value0, Res))).
                             [{json_struct, __JsonStruct},
                              {module, ?MODULE},
                              {line,   ?LINE}] });
-            Value -> Value
+            __JsonValue -> __JsonValue
         end;
 
     (__Key, __Res) ->
@@ -184,7 +184,7 @@ end)(Value0, Res))).
             undefined -> erlang:error({json_val_undefined,
                             [{module, ?MODULE},
                              {line,   ?LINE}] });
-            Value -> Value
+            __JsonValue -> __JsonValue
         end
  end)(__Key, __Response))).
 
