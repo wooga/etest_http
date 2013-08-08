@@ -69,10 +69,10 @@ post_with_string_content_type_test() ->
     meck:expect(httpc, request, fun(post, {_, _, Type, _}, _, []) when Type == ContentType ->
                                         {ok, {{a,b,c},d,e}};
                                    (_, {_ , _, _, _}, _, _) ->
-                                        {error, bad_type}
+                                        {error, bad_header}
                                 end),
     URL = "http:localhost:8888/index.html",
-    Headers = [{"content-type", ContentType}],
+    Headers = [{"Content-Type", ContentType}],
     Body = <<"{\"name\":\"value\"}">>,
     ?assertMatch(#etest_http_res{}, etest_http:perform_request(post, URL, Headers, [], Body)),
     meck:unload(httpc).
@@ -83,10 +83,10 @@ post_with_binary_content_type_test() ->
     meck:expect(httpc, request, fun(post, {_, _, Type, _}, _, []) when Type == ContentType ->
                                         {ok, {{a,b,c},d,e}};
                                    (_, _, _, _) ->
-                                        {error, bad_type}
+                                        {error, bad_header}
                                 end),
     URL = "http:localhost:8888/index.html",
-    Headers = [{<<"content-type">>, ContentType}],
+    Headers = [{<<"Content-Type">>, ContentType}],
     Body = <<"{\"name\":\"value\"}">>,
     ?assertMatch(#etest_http_res{}, etest_http:perform_request(post, URL, Headers, [], Body)),
     meck:unload(httpc).

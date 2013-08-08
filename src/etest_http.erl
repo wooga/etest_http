@@ -3,6 +3,8 @@
 
 -include ("etest_http.hrl").
 
+-define(CONTENT_TYPE_FIELD_NAME, 'Content-Type').
+
 
 % Erlangs built-in HTTP client requires inets to be running to operate.
 -on_load (init/0).
@@ -17,7 +19,10 @@ perform_request(Method, Url, Headers, Queries, Body) ->
         case Method of
             get    -> {FullUrl, Headers};
             delete -> {FullUrl, Headers};
-            post   -> {FullUrl, Headers, b2s(lookup_header('content-type', Headers)), Body};
+            post   -> 
+                {ok, Type, NewHeaders} = grab_header(?CONTENT_TYPE_FIELD_NAME,
+                                                     Headers),
+                {FullUrl, NewHeaders, b2s(Type), Body};
             _      -> {FullUrl, Headers, "", Body}
         end,
 
@@ -71,23 +76,26 @@ url_encode(Value) when is_integer(Value) ->
 %% ?perform_post macro allows the following format for header:
 %%   header() :: {string() | binary() | atom(), string() | binary()}
 %%
-%% key should be looked up in different allowed formats.
--spec lookup_header(atom(), list(term())) -> string() | binary().
-lookup_header(Key, Headers) ->
-    case proplists:get_value(Key, Headers) of
+%% key should be looked up in different allowed formats, and Headers proplists
+%% returned without any reference to the key.
+-spec grab_header(atom(), list(term())) -> {'ok', string() | binary(), list(term())}.
+grab_header(RawKey, Headers) ->
+    case proplists:get_value(RawKey, Headers) of
         undefined ->
-            case proplists:get_value(atom_to_list(Key), Headers) of
+            StringKey = atom_to_list(RawKey),
+            case proplists:get_value(StringKey, Headers) of
                 undefined ->
-                    case proplists:get_value(list_to_binary(atom_to_list(Key)), Headers) of
-                        undefined -> "";
-                        Val -> Val
+                    BinaryKey = list_to_binary(atom_to_list(RawKey)),
+                    case proplists:get_value(BinaryKey, Headers) of
+                        undefined -> {ok, "", Headers};
+                        Val -> {ok, Val, proplists:delete(BinaryKey, Headers)}
                     end;
-                Val -> Val
+                Val -> {ok, Val, proplists:delete(StringKey, Headers)}
             end;
-        Val -> Val
+        Val -> {ok, Val, proplists:delete(RawKey, Headers)}
     end.
-                    
-                            
+
+
 %% Makes sure the returned value is a string.
 -spec b2s(string() | binary()) -> string().
 b2s(Var) when is_binary(Var) ->
