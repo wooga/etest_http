@@ -5,7 +5,6 @@
 
 -include_lib("etest/include/etest.hrl").
 -include_lib("etest_http/include/etest_http.hrl").
--include_lib("eunit/include/eunit.hrl").
 
 before_suite() ->
     inets:start(),
@@ -61,6 +60,9 @@ test_json_assertions() ->
     ?assert_error({assert_json_val, _},
                   ?assert_json_value(<<"foo">>, undefined, Res)).
 
+-ifdef(TEST).
+-include_lib("eunit/include/eunit.hrl").
+
 post_with_string_content_type_test() ->
     ContentType = "application/foo",
     meck:new(httpc),
@@ -89,4 +91,4 @@ post_with_binary_content_type_test() ->
     ?assertMatch(#etest_http_res{}, etest_http:perform_request(post, URL, Headers, [], Body)),
     meck:unload(httpc).
     
-    
+-endif.
