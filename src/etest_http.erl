@@ -13,11 +13,13 @@ init() -> inets:start(), ok.
 %% returning a `etest_http_res` record to assert upon.
 perform_request(Method, Url, Headers, Queries, Body) ->
     FullUrl = Url ++ query_string(Queries),
-    Request = case Method of
-        get -> {FullUrl, Headers};
-        delete -> {FullUrl, Headers};
-        _   -> {FullUrl, Headers, "", Body}
-    end,
+    Request = 
+        case Method of
+            get    -> {FullUrl, Headers};
+            delete -> {FullUrl, Headers};
+            post   -> {FullUrl, Headers, b2s(lookup_header('content-type', Headers)), Body};
+            _      -> {FullUrl, Headers, "", Body}
+        end,
 
     case httpc:request(Method, Request, [{autoredirect, false}], []) of
         {ok, Response} ->
@@ -65,3 +67,30 @@ url_encode(Value) when is_bitstring(Value) ->
 
 url_encode(Value) when is_integer(Value) ->
     Value.
+
+%% ?perform_post macro allows the following format for header:
+%%   header() :: {string() | binary() | atom(), string() | binary()}
+%%
+%% key should be looked up in different allowed formats.
+-spec lookup_header(atom(), list(term())) -> string() | binary().
+lookup_header(Key, Headers) ->
+    case proplists:get_value(Key, Headers) of
+        undefined ->
+            case proplists:get_value(atom_to_list(Key), Headers) of
+                undefined ->
+                    case proplists:get_value(list_to_binary(atom_to_list(Key)), Headers) of
+                        undefined -> "";
+                        Val -> Val
+                    end;
+                Val -> Val
+            end;
+        Val -> Val
+    end.
+                    
+                            
+%% Makes sure the returned value is a string.
+-spec b2s(string() | binary()) -> string().
+b2s(Var) when is_binary(Var) ->
+    binary_to_list(Var);
+b2s(Var) ->
+    Var.
