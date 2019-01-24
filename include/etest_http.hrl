@@ -102,14 +102,14 @@ end)(Res))).
 
 -define (assert_header(HeaderName, Res),
 ((fun(__Res) ->
-    Headers = __Res#etest_http_res.headers,
-    case proplists:is_defined(HeaderName, Headers) of
+    __Headers = __Res#etest_http_res.headers,
+    case proplists:is_defined(HeaderName, __Headers) of
         false ->
             erlang:error({assert_header,
                 [{module,   ?MODULE},
                  {line,     ?LINE},
                  {expected, (??HeaderName)},
-                 {headers,  Headers}] });
+                 {headers,  __Headers}] });
         _ -> ok
     end
 end)(Res))).
