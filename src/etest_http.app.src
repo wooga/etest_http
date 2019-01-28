@@ -1,6 +1,8 @@
 {application, etest_http, [
-    {description, "ETest HTTP Assertions"},
-    {vsn, git},
+    {description, "An etest extension library for HTTP/Web Assertions"},
+    {vsn, "1.0.1"},
+    {links, [{"Github", "https://github.com/wooga/etest_http"}]},
+    {licenses, ["BSD-2-Clause"]},
     {registered, []},
     {modules, []},
     {applications, [kernel, stdlib]},
