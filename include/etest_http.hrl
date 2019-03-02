@@ -9,7 +9,7 @@
 -record (etest_http_res, {
     status  :: non_neg_integer(),
     headers :: [{binary(), binary() | string()}],
-    body    :: binary()
+    body    :: binary() | list()
 }).
 
 
