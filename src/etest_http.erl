@@ -73,6 +73,9 @@ make_query({Key, Value}) when is_binary(Value) ->
 make_query({Key, Value}) when is_integer(Value) ->
     make_query({Key, integer_to_list(Value)});
 
+make_query({Key, Value}) when is_float(Value) ->
+    make_query({Key, lists:flatten(io_lib:format("~p", [Value]))});
+
 % Key to list
 make_query({Key, Value}) when is_atom(Key) ->
     make_query({atom_to_list(Key), Value});
@@ -88,4 +91,7 @@ url_encode(Value) when is_bitstring(Value) ->
     url_encode(binary_to_list(Value));
 
 url_encode(Value) when is_integer(Value) ->
+    Value;
+
+url_encode(Value) when is_float(Value) ->
     Value.
